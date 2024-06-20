@@ -1,14 +1,14 @@
 import { Link } from "@nextui-org/link";
+import { SupabaseClient } from "@supabase/supabase-js";
 
 import { Navbar } from "@/components/navbar";
-import { SupabaseClient } from "@supabase/supabase-js";
 
 export default function DefaultLayout({
   children,
-  supabase
+  supabase,
 }: {
-  children: React.ReactNode,
-  supabase: SupabaseClient | null
+  children: React.ReactNode;
+  supabase: SupabaseClient | null;
 }) {
   return (
     <div className="relative flex flex-col h-screen">
@@ -24,8 +24,9 @@ export default function DefaultLayout({
           title="Github page"
         >
           <p className="text-primary">Stein Petter Tokvam</p>
-          <span className="text-default-600">© {new Date().getFullYear()}</span>
-          
+          <span className="text-default-600">
+            © {new Date().getFullYear()}
+          </span>
         </Link>
       </footer>
     </div>

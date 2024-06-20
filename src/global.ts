@@ -1,140 +1,170 @@
-import { SupabaseClient } from "@supabase/supabase-js"
-import { NetatmoInfo } from "./types"
+import { SupabaseClient } from "@supabase/supabase-js";
+
+import { NetatmoInfo } from "./types";
 
 export const routes = {
-    home: '/',
-    dashboard: '/dashboard',
-    device: '/device/:id',
-    day: '/device/:id/day/:date',
-    login: '/login',
-    netatmoOauth: '/netatmo/oauth',
-    netatmoRedirect: '/netatmo/redirect'
-}
+  home: "/rain-memo",
+  dashboard: "/rain-memo/dashboard",
+  device: "/rain-memo/device/:id",
+  day: "/rain-memo/device/:id/day/:date",
+  login: "/rain-memo/login",
+  netatmoOauth: "/rain-memo/netatmo/oauth",
+  netatmoRedirect: "/rain-memo/netatmo/redirect",
+};
 
 export const rainTableHeaders = (isDay: boolean) => [
-    {
-        key: 'date',
-        label: isDay ? 'Tidspunkt' : 'Dato'
-    },
-    {
-        key: 'amount',
-        label: 'Mengde'
-    },
-]
+  {
+    key: "date",
+    label: isDay ? "Tidspunkt" : "Dato",
+  },
+  {
+    key: "amount",
+    label: "Mengde",
+  },
+];
 
 export const styles = {
-    valueText: 'text-large font-bold leading-none text-default-400',
-    valueHeaderText: 'text-medium font-semibold leading-none text-default-600',
-    textInputStyle: {
-        label: "text-black/50 dark:text-white/90",
-        input: [
-            "bg-transparent",
-            "text-black/90 dark:text-white/90",
-            "placeholder:text-default-700/50 dark:placeholder:text-white/60",
-        ],
-        innerWrapper: "bg-transparent",
-        inputWrapper: [
-            "shadow-xl",
-            "bg-default-200/50",
-            "dark:bg-default/60",
-            "backdrop-blur-xl",
-            "backdrop-saturate-200",
-            "hover:bg-default-200/70",
-            "dark:hover:bg-default/70",
-            "group-data-[focused=true]:bg-default-200/50",
-            "dark:group-data-[focused=true]:bg-default/60",
-            "!cursor-text",
-        ],
-    }
+  valueText: "text-large font-bold leading-none text-default-400",
+  valueHeaderText: "text-medium font-semibold leading-none text-default-600",
+  textInputStyle: {
+    label: "text-black/50 dark:text-white/90",
+    input: [
+      "bg-transparent",
+      "text-black/90 dark:text-white/90",
+      "placeholder:text-default-700/50 dark:placeholder:text-white/60",
+    ],
+    innerWrapper: "bg-transparent",
+    inputWrapper: [
+      "shadow-xl",
+      "bg-default-200/50",
+      "dark:bg-default/60",
+      "backdrop-blur-xl",
+      "backdrop-saturate-200",
+      "hover:bg-default-200/70",
+      "dark:hover:bg-default/70",
+      "group-data-[focused=true]:bg-default-200/50",
+      "dark:group-data-[focused=true]:bg-default/60",
+      "!cursor-text",
+    ],
+  },
+};
+
+export async function getNetatmoClientIdAndSecret(
+  supabase: SupabaseClient,
+): Promise<{ data: NetatmoInfo | null; error: any }> {
+  const { data, error } = await supabase.from("netatmo_app_info").select();
+
+  if (error) {
+    console.log(error);
+
+    return { data: null, error };
+  }
+
+  return {
+    data: {
+      client_id: data[0].client_id,
+      client_secret: data[0].client_secret,
+    },
+    error: null,
+  };
 }
 
-export async function getNetatmoClientIdAndSecret(supabase: SupabaseClient): Promise<{ data: NetatmoInfo | null, error: any }> {
-    const { data, error } = await supabase
-        .from('netatmo_app_info')
-        .select()
+async function updateNetatmoInfo(
+  id: string,
+  data: { access_token: string; refresh_token: string; expires_in: number },
+  supabase: SupabaseClient,
+) {
+  console.log("updateing data in db", id);
 
+  return await supabase
+    .from("netatmo_user_info")
+    .update({
+      access_token: data.access_token,
+      refresh_token: data.refresh_token,
+      expires_at: Date.now() + data.expires_in * 1000,
+    })
+    .eq("id", id)
+    .select();
+}
+
+async function refreshNetatmoToken(
+  id: string,
+  refresh_token: string,
+  supabase: SupabaseClient,
+) {
+  return await getNetatmoClientIdAndSecret(supabase).then(({ data, error }) => {
     if (error) {
-        console.log(error)
-        return { data: null, error }
+      console.log(error);
+
+      return;
     }
-    return {
-        data: {
-            client_id: data[0].client_id,
-            client_secret: data[0].client_secret
-        }, error: null
-    }
-}
 
-async function updateNetatmoInfo(id: string, data: { access_token: string, refresh_token: string, expires_in: number }, supabase: SupabaseClient) {
-    console.log("updateing data in db", id)
-    return await supabase
-        .from('netatmo_user_info')
-        .update({
-            access_token: data.access_token,
-            refresh_token: data.refresh_token,
-            expires_at: Date.now() + data.expires_in * 1000
-        })
-        .eq('id', id)
-        .select()
-}
+    return (
+      data &&
+      fetch("https://api.netatmo.com/oauth2/token", {
+        method: "POST",
+        body: new URLSearchParams({
+          grant_type: "refresh_token",
+          refresh_token,
+          client_id: data.client_id,
+          client_secret: data.client_secret,
+        }),
+      })
+        .then((res: any) => res.json())
+        .then(
+          (data: {
+            access_token: string;
+            refresh_token: string;
+            expires_in: number;
+          }) => {
+            console.log(data);
+            updateNetatmoInfo(id, data, supabase).then((res) =>
+              console.log(res),
+            );
 
-async function refreshNetatmoToken(id: string, refresh_token: string, supabase: SupabaseClient) {
-    return await getNetatmoClientIdAndSecret(supabase)
-        .then(({ data, error }) => {
-            if (error) {
-                console.log(error)
-                return
-            }
-
-            return data && fetch('https://api.netatmo.com/oauth2/token', {
-                method: 'POST',
-                body: new URLSearchParams({
-                    grant_type: 'refresh_token',
-                    refresh_token,
-                    client_id: data.client_id,
-                    client_secret: data.client_secret
-                })
-            })
-                .then((res: any) => res.json())
-                .then((data: { access_token: string, refresh_token: string, expires_in: number }) => {
-                    console.log(data)
-                    updateNetatmoInfo(id, data, supabase)
-                    .then(res => console.log(res))
-                    return data
-                })
-        })
-
+            return data;
+          },
+        )
+    );
+  });
 }
 
 export async function getNetatmoUserData(supabase: SupabaseClient) {
-    const { data, error } = await supabase
-        .from('netatmo_user_info')
-        .select()
+  const { data, error } = await supabase.from("netatmo_user_info").select();
 
-    if (error || data.length === 0) {
-        console.log(error)
-        return { data: null, error: "No netatmo data found." }
-    }
+  if (error || data.length === 0) {
+    console.log(error);
 
-    if (data[0].expires_at < Date.now()) {
-        return refreshNetatmoToken(data[0].id, data[0].refresh_token, supabase)
-            .then((data) => {
-                console.log("Refreshed token")
-                return data ? {
-                    data: {
-                        access_token: data.access_token,
-                        refresh_token: data.refresh_token,
-                        expires_at: Date.now() + data.expires_in*1000
-                    }, error: null 
-                } : { data: null, error: "No netatmo data found." }
-            })
-    }
+    return { data: null, error: "No netatmo data found." };
+  }
 
-    return {
-        data: {
-            access_token: data[0].access_token,
-            refresh_token: data[0].refresh_token,
-            expires_at: data[0].expires_at
-        }, error: null
-    }
+  if (data[0].expires_at < Date.now()) {
+    return refreshNetatmoToken(
+      data[0].id,
+      data[0].refresh_token,
+      supabase,
+    ).then((data) => {
+      console.log("Refreshed token");
+
+      return data
+        ? {
+            data: {
+              access_token: data.access_token,
+              refresh_token: data.refresh_token,
+              expires_at: Date.now() + data.expires_in * 1000,
+            },
+            error: null,
+          }
+        : { data: null, error: "No netatmo data found." };
+    });
+  }
+
+  return {
+    data: {
+      access_token: data[0].access_token,
+      refresh_token: data[0].refresh_token,
+      expires_at: data[0].expires_at,
+    },
+    error: null,
+  };
 }

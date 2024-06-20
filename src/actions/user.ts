@@ -1,7 +1,6 @@
-
 export const setSession = (session: any) => ({
-    type: 'SET_SESSION',
-    payload: {
-        session
-    }
-})
+  type: "SET_SESSION",
+  payload: {
+    session,
+  },
+});

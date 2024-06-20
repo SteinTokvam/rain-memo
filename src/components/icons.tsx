@@ -7,7 +7,33 @@ export const Logo: React.FC<IconSvgProps> = ({
   height,
   ...props
 }) => (
-  <svg width="36" height="36" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg"> <path d="M170 129.496C170 168.434 138.66 200 100 200C61.3401 200 30 168.434 30 129.496C30 92.6391 65.8392 48.2064 95.1126 6.95421C97.5122 3.57266 102.538 3.53875 104.974 6.89421C135.351 48.7369 170 92.5911 170 129.496Z" fill="url(#paint0_linear_105_517)" /> <defs> <linearGradient id="paint0_linear_105_517" x1="44.35" y1="20.0459" x2="138.831" y2="176.559" gradientUnits="userSpaceOnUse"> <stop stop-color="#ACAAFF" /> <stop offset="1" stop-color="#C0E8FF" /> </linearGradient> </defs> </svg>
+  <svg
+    fill="none"
+    height="36"
+    viewBox="0 0 200 200"
+    width="36"
+    xmlns="http://www.w3.org/2000/svg"
+  >
+    {" "}
+    <path
+      d="M170 129.496C170 168.434 138.66 200 100 200C61.3401 200 30 168.434 30 129.496C30 92.6391 65.8392 48.2064 95.1126 6.95421C97.5122 3.57266 102.538 3.53875 104.974 6.89421C135.351 48.7369 170 92.5911 170 129.496Z"
+      fill="url(#paint0_linear_105_517)"
+    />{" "}
+    <defs>
+      {" "}
+      <linearGradient
+        gradientUnits="userSpaceOnUse"
+        id="paint0_linear_105_517"
+        x1="44.35"
+        x2="138.831"
+        y1="20.0459"
+        y2="176.559"
+      >
+        {" "}
+        <stop stopColor="#ACAAFF" /> <stop offset="1" stopColor="#C0E8FF" />{" "}
+      </linearGradient>{" "}
+    </defs>{" "}
+  </svg>
 );
 
 export const FilterIcon: React.FC<IconSvgProps> = ({
@@ -17,21 +43,22 @@ export const FilterIcon: React.FC<IconSvgProps> = ({
   ...props
 }) => {
   return (
-    <svg 
-      width="36"
-      height="36"
-      vertical-align="middle"
+    <svg
       fill="currentColor"
+      height="36"
       overflow="hidden"
-
-      viewBox="0 0 1024 1024"
       version="1.1"
-      xmlns="http://www.w3.org/2000/svg">
-      <path d="M640 288a64 64 0 1 1 0.032-128.032A64 64 0 0 1 640 288z m123.456-96c-14.304-55.04-64-96-123.456-96s-109.152 40.96-123.456 96H128v64h388.544c14.304 55.04 64 96 123.456 96s109.152-40.96 123.456-96H896V192h-132.544zM640 864a64 64 0 1 1 0.032-128.032A64 64 0 0 1 640 864m0-192c-59.456 0-109.152 40.96-123.456 96H128v64h388.544c14.304 55.04 64 96 123.456 96s109.152-40.96 123.456-96H896v-64h-132.544c-14.304-55.04-64-96-123.456-96M384 576a64 64 0 1 1 0.032-128.032A64 64 0 0 1 384 576m0-192c-59.456 0-109.152 40.96-123.456 96H128v64h132.544c14.304 55.04 64 96 123.456 96s109.152-40.96 123.456-96H896v-64H507.456c-14.304-55.04-64-96-123.456-96"
-        className="fill-black dark:fill-white" />
+      viewBox="0 0 1024 1024"
+      width="36"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <path
+        className="fill-black dark:fill-white"
+        d="M640 288a64 64 0 1 1 0.032-128.032A64 64 0 0 1 640 288z m123.456-96c-14.304-55.04-64-96-123.456-96s-109.152 40.96-123.456 96H128v64h388.544c14.304 55.04 64 96 123.456 96s109.152-40.96 123.456-96H896V192h-132.544zM640 864a64 64 0 1 1 0.032-128.032A64 64 0 0 1 640 864m0-192c-59.456 0-109.152 40.96-123.456 96H128v64h388.544c14.304 55.04 64 96 123.456 96s109.152-40.96 123.456-96H896v-64h-132.544c-14.304-55.04-64-96-123.456-96M384 576a64 64 0 1 1 0.032-128.032A64 64 0 0 1 384 576m0-192c-59.456 0-109.152 40.96-123.456 96H128v64h132.544c14.304 55.04 64 96 123.456 96s109.152-40.96 123.456-96H896v-64H507.456c-14.304-55.04-64-96-123.456-96"
+      />
     </svg>
-  )
-}
+  );
+};
 
 export const DiscordIcon: React.FC<IconSvgProps> = ({
   size = 24,

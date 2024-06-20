@@ -6,22 +6,21 @@ import {
   NavbarContent,
   NavbarItem,
 } from "@nextui-org/navbar";
-import { siteConfig } from "@/config/site";
-import { ThemeSwitch } from "@/components/theme-switch";
-import {
-  GithubIcon,
-} from "@/components/icons";
-import { Logo } from "@/components/icons";
-import { useDispatch, useSelector } from "react-redux";
-import { setSession } from "@/actions/user";
-import { routes } from "@/global";
+import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { SupabaseClient } from "@supabase/supabase-js";
+
+import { siteConfig } from "@/config/site";
+import { ThemeSwitch } from "@/components/theme-switch";
+import { GithubIcon } from "@/components/icons";
+import { Logo } from "@/components/icons";
+import { setSession } from "@/actions/user";
+import { routes } from "@/global";
 
 export const Navbar = ({ supabase }: { supabase: SupabaseClient | null }) => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const session = localStorage.getItem('sb-dezjrltoowqjcqiaqaog-auth-token')
+  const session = localStorage.getItem("sb-dezjrltoowqjcqiaqaog-auth-token");
 
   return (
     <NextUINavbar maxWidth="xl" position="sticky">
@@ -38,10 +37,7 @@ export const Navbar = ({ supabase }: { supabase: SupabaseClient | null }) => {
         </NavbarBrand>
       </NavbarContent>
 
-      <NavbarContent
-        className="flex basis-1/5 sm:basis-full"
-        justify="end"
-      >
+      <NavbarContent className="flex basis-1/5 sm:basis-full" justify="end">
         <NavbarItem className="hidden sm:flex gap-2">
           <Link isExternal href={siteConfig.links.github}>
             <GithubIcon className="text-default-500" />
@@ -49,22 +45,25 @@ export const Navbar = ({ supabase }: { supabase: SupabaseClient | null }) => {
           <ThemeSwitch />
         </NavbarItem>
         <NavbarItem className={"hidden sm:flex"}>
-          <Button className={`${session ? "hidden " : ""}`}
+          <Button
+            className={`${session ? "hidden " : ""}`}
             onClick={() => {
-              navigate(routes.dashboard)
-            }}>Logg inn/Registrer deg
+              navigate(routes.dashboard);
+            }}
+          >
+            Logg inn/Registrer deg
           </Button>
           <Button
             className={`${!session ? "hidden " : ""}text-sm font-normal text-default-600 bg-default-100`}
-            onClick={() => {
-              supabase && supabase.auth.signOut().then(() => {
-                dispatch(setSession(null));
-                navigate(routes.home);
-              }
-              )
-            }}
             color="danger"
             variant="flat"
+            onClick={() => {
+              supabase &&
+                supabase.auth.signOut().then(() => {
+                  dispatch(setSession(null));
+                  navigate(routes.home);
+                });
+            }}
           >
             Logg ut
           </Button>
@@ -77,23 +76,26 @@ export const Navbar = ({ supabase }: { supabase: SupabaseClient | null }) => {
         </Link>
         <ThemeSwitch />
         <NavbarItem className="flex">
-        <Button className={`${session ? "hidden " : ""}`}
+          <Button
+            className={`${session ? "hidden " : ""}`}
+            variant="flat"
             onClick={() => {
-              navigate(routes.dashboard)
+              navigate(routes.dashboard);
             }}
-            variant="flat">Logg inn
+          >
+            Logg inn
           </Button>
           <Button
             className={`${!session ? "hidden " : ""}text-sm font-normal text-default-600 bg-default-100`}
-            onClick={() => {
-              supabase && supabase.auth.signOut().then(() => {
-                dispatch(setSession(null));
-                navigate(routes.home);
-              }
-              )
-            }}
             color="danger"
             variant="flat"
+            onClick={() => {
+              supabase &&
+                supabase.auth.signOut().then(() => {
+                  dispatch(setSession(null));
+                  navigate(routes.home);
+                });
+            }}
           >
             Logg ut
           </Button>
