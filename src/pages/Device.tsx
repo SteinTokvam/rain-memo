@@ -141,9 +141,6 @@ export default function Device({ supabase }: { supabase: SupabaseClient }) {
                             minDate={fromDate(new Date(data[0].date.valueOf() * 1000), "Europe/Oslo")}
                             onOpenChange={onOpenChange}
                         />
-                        {
-                            console.log(dataFormatted[1])
-                        }
                         <Graph data={dataFormatted} />
                         <Divider />
 
