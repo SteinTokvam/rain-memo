@@ -85,7 +85,7 @@ export default function Dashboard({ supabase }: { supabase: SupabaseClient }) {
                   })}
                 </CardBody>
               </Card>
-            ))}</> : <Spinner />}
+            ))}</> : <Spinner color="secondary" />}
       </section>
     </DefaultLayout>
   );
