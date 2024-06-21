@@ -2,11 +2,7 @@ import * as React from "react";
 
 import { IconSvgProps } from "@/types";
 
-export const Logo: React.FC<IconSvgProps> = ({
-  size = 36,
-  height,
-  ...props
-}) => (
+export const Logo: React.FC<IconSvgProps> = () => (
   <svg
     fill="none"
     height="36"
@@ -36,12 +32,7 @@ export const Logo: React.FC<IconSvgProps> = ({
   </svg>
 );
 
-export const FilterIcon: React.FC<IconSvgProps> = ({
-  size = 24,
-  width,
-  height,
-  ...props
-}) => {
+export const FilterIcon: React.FC<IconSvgProps> = () => {
   return (
     <svg
       fill="currentColor"

@@ -24,7 +24,6 @@ export default function Day({ supabase }: { supabase: SupabaseClient }) {
   const station = useSelector(
     (state: any) => state.rootReducer.netatmo.stations,
   ).filter((s: any) => s.home_id === id)[0];
-  const [data, setData] = useState([]);
   const [dataFormatted, setDataFormatted] = useState([]);
   const navigate = useNavigate();
 
@@ -64,7 +63,6 @@ export default function Day({ supabase }: { supabase: SupabaseClient }) {
         .then((data) => {
           const dataWithKey = data.map((d: any) => ({ ...d, key: uuidv4() }));
 
-          setData(dataWithKey);
           setDataFormatted(
             dataWithKey.map((d: any) => ({
               key: d.key,

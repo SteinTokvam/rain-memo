@@ -1,5 +1,5 @@
 // @ts-ignore
-export default function CustomToolTip({ active, payload, label }) {
+export default function CustomToolTip({ active, payload }) {
   if (active && payload && payload.length) {
     return (
       <>

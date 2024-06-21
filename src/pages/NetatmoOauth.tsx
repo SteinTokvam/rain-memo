@@ -1,5 +1,5 @@
 import { SupabaseClient } from "@supabase/supabase-js";
-import { useState, useEffect } from "react";
+import { useEffect } from "react";
 import { v4 as uuidv4 } from "uuid";
 
 import { getNetatmoClientIdAndSecret, routes } from "@/global";
@@ -13,7 +13,7 @@ export default function NetatmoOauth({
 
   const redirect_uri = "http://" + host + routes.netatmoRedirect;
   const scope = "read_station";
-  const [state, setState] = useState(uuidv4());
+  const state = uuidv4();
 
   useEffect(() => {
     localStorage.setItem("state", state);

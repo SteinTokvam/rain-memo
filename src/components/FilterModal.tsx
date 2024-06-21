@@ -16,7 +16,6 @@ import {
   startOfMonth,
   endOfMonth,
 } from "@internationalized/date";
-import { useLocale } from "@react-aria/i18n";
 
 export default function FilterModal({
   isOpen,
@@ -35,8 +34,6 @@ export default function FilterModal({
     start: startOfMonth(today(getLocalTimeZone())),
     end: today(getLocalTimeZone()),
   });
-
-  let { locale } = useLocale();
 
   let now = today(getLocalTimeZone());
 
