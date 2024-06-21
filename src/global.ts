@@ -3,13 +3,13 @@ import { SupabaseClient } from "@supabase/supabase-js";
 import { NetatmoInfo } from "./types";
 
 export const routes = {
-  home: "/rain-memo",
-  dashboard: "/rain-memo/dashboard",
-  device: "/rain-memo/device/:id",
-  day: "/rain-memo/device/:id/day/:date",
-  login: "/rain-memo/login",
-  netatmoOauth: "/rain-memo/netatmo/oauth",
-  netatmoRedirect: "/rain-memo/netatmo/redirect",
+  home: "/",
+  dashboard: "/dashboard",
+  device: "/device/:id",
+  day: "/device/:id/day/:date",
+  login: "/login",
+  netatmoOauth: "/netatmo/oauth",
+  netatmoRedirect: "/netatmo/redirect",
 };
 
 export const rainTableHeaders = (isDay: boolean) => [
