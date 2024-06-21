@@ -46,9 +46,6 @@ export default function Auth({
       supabase.auth.signUp({
         email,
         password,
-        options: {
-          emailRedirectTo: "https://nrk.no",
-        },
       });
     } else {
       supabase.auth
