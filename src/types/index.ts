@@ -4,4 +4,4 @@ export type IconSvgProps = SVGProps<SVGSVGElement> & {
   size?: number;
 };
 
-export type NetatmoInfo = { client_id: string; client_secret: string };
+export type NetatmoInfo = { client_id: string; client_secret: string, redirect_uri: string };

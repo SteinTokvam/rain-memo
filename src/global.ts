@@ -64,6 +64,7 @@ export async function getNetatmoClientIdAndSecret(
     data: {
       client_id: data[0].client_id,
       client_secret: data[0].client_secret,
+      redirect_uri: data[0].redirect_uri,
     },
     error: null,
   };

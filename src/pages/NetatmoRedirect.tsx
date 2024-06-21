@@ -36,7 +36,7 @@ export default function NetatmoRedirect({
         client_secret: res.data ? res.data?.client_secret : "",
         code: code,
         scope: scope,
-        redirect_uri: "http://localhost:5173/netatmo/redirect",
+        redirect_uri: res.data ? res.data.redirect_uri : "",
       };
 
       fetch(`https://api.netatmo.com/oauth2/token`, {
