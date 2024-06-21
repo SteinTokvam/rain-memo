@@ -83,6 +83,21 @@ export default function Device({ supabase }: { supabase: SupabaseClient }) {
         });
     }, []);
 
+    function getNumberOfDaysSinceStart(start: Date, end: Date) {
+        let Difference_In_Time =
+            end.getTime() - start.getTime();
+        console.log(Difference_In_Time);
+        console.log(Math.round(Difference_In_Time / (1000 * 3600 * 24)))
+
+        return Math.round(Difference_In_Time / (1000 * 3600 * 24));
+    }
+
+    function addDays(date: Date, days: number) {
+        const result = new Date(date);
+        result.setDate(result.getDate() + days);
+        return result;
+    }
+
     return (
         <DefaultLayout supabase={supabase}>
             <section className="flex flex-col items-center justify-center gap-4 py-8 md:py-10">
@@ -146,8 +161,10 @@ export default function Device({ supabase }: { supabase: SupabaseClient }) {
 
                         <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
                             <div className="shadow-lg dark:bg-default/30 rounded-lg p-4">
-                                <h1 className="text-xl text-default-600">Total nedbør:</h1>
-                                <h2 className="text-xl text-default-600">
+                                <h1 className="text-xl text-default-900">
+                                    Total nedbør:
+                                </h1>
+                                <h2 className="text-md text-default-600">
                                     {dataFormatted
                                         .reduce((a: any, b: any) => a + b.amount, 0)
                                         .toFixed(2)}{" "}
@@ -155,22 +172,24 @@ export default function Device({ supabase }: { supabase: SupabaseClient }) {
                                 </h2>
                             </div>
                             <div className="shadow-lg dark:bg-default/30 rounded-lg p-4">
-                                <h1 className="text-xl text-default-600">Antall regndager:</h1>
-                                <h2 className="text-xl text-default-600">
+                                <h1 className="text-xl text-default-900">
+                                    Antall regndager:
+                                </h1>
+                                <h2 className="text-md text-default-600">
                                     {dataFormatted.length}
                                 </h2>
                             </div>
 
                             <div className="shadow-lg dark:bg-default/30 rounded-lg p-4">
-                                <h1 className="text-xl text-default-600">
+                                <h1 className="text-xl text-default-900">
                                     Dagen med mest regn:
                                 </h1>
-                                <h2 className="text-xl text-default-600">
+                                <h2 className="text-md text-default-600">
                                     {
                                         dataFormatted.reduce((a: any, b: any) =>
                                             a.amount > b.amount ? a : b,
-                                        ).date + ""
-                                    }{" "}
+                                        ).date + " "
+                                    }
                                     (
                                     {
                                         dataFormatted.reduce((a: any, b: any) =>
@@ -181,14 +200,14 @@ export default function Device({ supabase }: { supabase: SupabaseClient }) {
                                 </h2>
                             </div>
                             <div className="shadow-lg dark:bg-default/30 rounded-lg p-4">
-                                <h1 className="text-xl text-default-600">
+                                <h1 className="text-xl text-default-900">
                                     Dagen med minst regn:
                                 </h1>
-                                <h2 className="text-xl text-default-600">
+                                <h2 className="text-md text-default-600">
                                     {
                                         dataFormatted.reduce((a: any, b: any) =>
                                             a.amount < b.amount ? a : b,
-                                        ).date + ""
+                                        ).date + " "
                                     }
                                     (
                                     {
@@ -199,6 +218,30 @@ export default function Device({ supabase }: { supabase: SupabaseClient }) {
                                     mm)
                                 </h2>
                             </div>
+
+                            <div className="shadow-lg dark:bg-default/30 rounded-lg p-4">
+                                <h1 className="text-xl text-default-900">
+                                    Antall dager i snitt mellom hver regndag:
+                                </h1>
+                                <h2 className="text-md text-default-600 py-4">
+                                    {
+                                        (getNumberOfDaysSinceStart(new Date(dataFormatted[0].date), new Date(dataFormatted[dataFormatted.length - 1].date)) / dataFormatted.length).toFixed(0) + " dager"
+                                    }
+                                </h2>
+                                {
+                                    //om vi er før tidspunktet for gjetningen av neste regndag så print gjetningen
+                                    addDays(new Date(dataFormatted[dataFormatted.length - 1].date),
+                                        Math.round(getNumberOfDaysSinceStart(new Date(dataFormatted[0].date), new Date(dataFormatted[dataFormatted.length - 1].date)) / dataFormatted.length)).getTime() > Date.now() &&
+                                    <h2 className="text-md text-default-600">
+                                        Kan dermed forvente regn
+                                        {
+                                            " " + addDays(new Date(dataFormatted[dataFormatted.length - 1].date),
+                                                Math.round(getNumberOfDaysSinceStart(new Date(dataFormatted[0].date), new Date(dataFormatted[dataFormatted.length - 1].date)) / dataFormatted.length)).toLocaleDateString("nb-NO") + " "
+                                        }
+                                        neste gang.
+                                    </h2>}
+                            </div>
+
                         </div>
                         <RainFilter handleClick={onOpen} />
                         <Table
