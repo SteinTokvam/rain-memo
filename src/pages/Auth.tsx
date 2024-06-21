@@ -59,7 +59,7 @@ export default function Auth({
         .then(({ error }) => {
           if (error) {
             console.log(error);
-            setErrorText(error.message)
+            setErrorText(`error status: ${error.status} - error name: ${error.name} - error message: ${error.message} - error code: ${error.code} - error stack: ${error.stack}`);
             setError(true);
           } else {
             setError(false);
