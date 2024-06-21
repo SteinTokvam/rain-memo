@@ -29,7 +29,7 @@ export const Navbar = ({ supabase }: { supabase: SupabaseClient | null }) => {
           <Link
             className="flex justify-start items-center gap-1"
             color="foreground"
-            href="/"
+            href={session ? routes.dashboard : routes.home}
           >
             <Logo />
             <p className="font-bold text-inherit">Rain memo</p>

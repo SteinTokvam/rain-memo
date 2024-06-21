@@ -28,8 +28,8 @@ export default function Device({ supabase }: { supabase: SupabaseClient }) {
   const station = useSelector(
     (state: any) => state.rootReducer.netatmo.stations,
   ).filter((s: any) => s.home_id === id)[0];
-  const [data, setData] = useState([]);
-  const [dataFormatted, setDataFormatted] = useState([]);
+  const [data, setData] = useState<{key: string; date: Date; amount: number}[]>([]);
+  const [dataFormatted, setDataFormatted] = useState<{key: string; date: Date; amount: number}[]>([]);
 
   const [sortDescriptor, setSortDescriptor] = useState({
     column: "date",
@@ -103,10 +103,10 @@ export default function Device({ supabase }: { supabase: SupabaseClient }) {
                     data
                       .filter((d: any) => d.amount > 0)
                       .map((d: any) => ({
-                        key: d.key,
-                        date: new Date(d.date * 1000)
+                        key: d.key as string,
+                        date: new Date(new Date(d.date * 1000)
                           .toISOString()
-                          .split("T")[0],
+                          .split("T")[0]),
                         amount: d.amount,
                       })),
                   );
@@ -119,7 +119,7 @@ export default function Device({ supabase }: { supabase: SupabaseClient }) {
                     .filter((d: any) => d.amount > 0)
                     .map((d: any) => ({
                       key: d.key,
-                      date: new Date(d.date * 1000).toISOString().split("T")[0],
+                      date: new Date(new Date(d.date * 1000).toISOString().split("T")[0]),
                       amount: d.amount,
                     })),
                 );
@@ -136,12 +136,15 @@ export default function Device({ supabase }: { supabase: SupabaseClient }) {
               }}
               isOpen={isOpen}
               maxDate={fromDate(
-                new Date(data[data.length - 1].date * 1000),
+                new Date(data[data.length - 1].date.valueOf() * 1000),
                 "Europe/Oslo",
               )}
-              minDate={fromDate(new Date(data[0].date * 1000), "Europe/Oslo")}
+              minDate={fromDate(new Date(data[0].date.valueOf() * 1000), "Europe/Oslo")}
               onOpenChange={onOpenChange}
             />
+            {
+                console.log(dataFormatted[1])
+            }
             <Graph data={dataFormatted} />
             <Divider />
 
@@ -168,14 +171,12 @@ export default function Device({ supabase }: { supabase: SupabaseClient }) {
                 </h1>
                 <h2 className="text-xl text-default-600">
                   {
-                    // @ts-ignore
                     dataFormatted.reduce((a: any, b: any) =>
                       a.amount > b.amount ? a : b,
-                    ).date
+                    ).date + ""
                   }{" "}
                   (
                   {
-                    // @ts-ignore
                     dataFormatted.reduce((a: any, b: any) =>
                       a.amount > b.amount ? a : b,
                     ).amount
@@ -189,14 +190,12 @@ export default function Device({ supabase }: { supabase: SupabaseClient }) {
                 </h1>
                 <h2 className="text-xl text-default-600">
                   {
-                    // @ts-ignore
                     dataFormatted.reduce((a: any, b: any) =>
                       a.amount < b.amount ? a : b,
-                    ).date
+                    ).date + ""
                   }
                   (
                   {
-                    // @ts-ignore
                     dataFormatted.reduce((a: any, b: any) =>
                       a.amount < b.amount ? a : b,
                     ).amount
