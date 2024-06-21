@@ -10,7 +10,7 @@ export default function NetatmoOauth({
   supabase: SupabaseClient;
 }) {
 
-  const redirect_uri = "http://" + "steintokvam.github.io/rain-memo" + routes.netatmoRedirect;
+  const redirect_uri = "https://rain-memo-steintokvams-projects.vercel.app" + routes.netatmoRedirect;
   const scope = "read_station";
   const state = uuidv4();
 
