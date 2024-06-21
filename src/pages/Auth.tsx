@@ -57,6 +57,7 @@ export default function Auth({
         })
         .then(({ error }) => {
           if (error) {
+            console.log(error);
             setError(true);
           } else {
             setError(false);
