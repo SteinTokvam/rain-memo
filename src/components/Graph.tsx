@@ -12,7 +12,7 @@ import CustomToolTip from "./CustomToolTip";
 export default function Graph({
   data,
 }: {
-  data: { key: string; date: Date; amount: number }[];
+  data: { key: string; date: string; amount: number }[];
 }) {
   return (
     <>
