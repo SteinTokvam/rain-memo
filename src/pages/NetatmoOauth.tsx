@@ -11,7 +11,7 @@ export default function NetatmoOauth({
 }) {
   const host = window.location.href.slice(7).split("/")[0];
 
-  const redirect_uri = "http://" + host + routes.netatmoRedirect;
+  const redirect_uri = "http://" + "steintokvam.github.io/rain-memo" + routes.netatmoRedirect;
   const scope = "read_station";
   const state = uuidv4();
 
