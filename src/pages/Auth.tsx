@@ -18,6 +18,7 @@ export default function Auth({
   const [password, setPassword] = useState("");
   const [error, setError] = useState(false);
   const [isSignUp, setIsSignUp] = useState(false);
+  const [errorText, setErrorText] = useState("");
 
   useEffect(() => {
     if (!supabase) {
@@ -58,6 +59,7 @@ export default function Auth({
         .then(({ error }) => {
           if (error) {
             console.log(error);
+            setErrorText(error.message)
             setError(true);
           } else {
             setError(false);
@@ -76,6 +78,7 @@ export default function Auth({
           <p className="font-bold text-inherit p-3">Rain memo</p>
         </div>
         {error && <p className="text-red-500">Wrong email or password</p>}
+        {error &&<p className="text-red-500">{errorText}</p>}
         <Input
           isClearable
           isRequired
