@@ -49,6 +49,8 @@ export const styles = {
   },
 };
 
+export const netatmo_base_url = 'https://api.netatmo.com';
+
 export async function getNetatmoClientIdAndSecret(
   supabase: SupabaseClient,
 ): Promise<{ data: NetatmoInfo | null; error: any }> {
