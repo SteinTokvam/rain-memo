@@ -75,7 +75,6 @@ async function updateNetatmoInfo(
   data: { access_token: string; refresh_token: string; expires_in: number },
   supabase: SupabaseClient,
 ) {
-  console.log("updateing data in db", id);
 
   return await supabase
     .from("netatmo_user_info")

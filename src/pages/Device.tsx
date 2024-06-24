@@ -10,7 +10,7 @@ import {
     getKeyValue,
     useDisclosure,
 } from "@nextui-org/react";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useSelector } from "react-redux";
 import { useNavigate, useParams } from "react-router-dom";
 import { v4 as uuidv4 } from "uuid";
@@ -35,6 +35,23 @@ export default function Device({ supabase }: { supabase: SupabaseClient }) {
         column: "date",
         direction: "descending",
     });
+
+    const sortedItems = useMemo(() => {
+        return dataFormatted ? [...dataFormatted].sort((a, b) => {
+            // @ts-ignore
+            const first = a[sortDescriptor.column];
+            // @ts-ignore
+            const second = b[sortDescriptor.column];
+            var cmp = 0
+            if (sortDescriptor.column === 'amount') {
+                cmp = parseFloat(first) < parseFloat(second) ? -1 : parseFloat(first) > parseFloat(second) ? 1 : 0;
+            } else {
+                cmp = first < second ? -1 : first > second ? 1 : 0;
+            }
+
+            return sortDescriptor.direction === "descending" ? -cmp : cmp;
+        }) : [];
+    }, [sortDescriptor, dataFormatted]);
 
     const { isOpen, onOpen, onOpenChange } = useDisclosure();
 
@@ -86,8 +103,6 @@ export default function Device({ supabase }: { supabase: SupabaseClient }) {
     function getNumberOfDaysSinceStart(start: Date, end: Date) {
         let Difference_In_Time =
             end.getTime() - start.getTime();
-        console.log(Difference_In_Time);
-        console.log(Math.round(Difference_In_Time / (1000 * 3600 * 24)))
 
         return Math.round(Difference_In_Time / (1000 * 3600 * 24));
     }
@@ -259,7 +274,7 @@ export default function Device({ supabase }: { supabase: SupabaseClient }) {
                                     </TableColumn>
                                 )}
                             </TableHeader>
-                            <TableBody items={dataFormatted}>
+                            <TableBody items={sortedItems}>
                                 {(item: any) => (
                                     <TableRow
                                         key={item.key}
