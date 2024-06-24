@@ -7,6 +7,7 @@ import { SupabaseClient } from "@supabase/supabase-js";
 import { getNetatmoUserData, routes } from "@/global";
 import { setStations } from "@/actions/netatmo";
 import DefaultLayout from "@/layouts/default";
+import { Device, Module } from "@/types";
 
 export default function Dashboard({ supabase }: { supabase: SupabaseClient }) {
   const navigate = useNavigate();
@@ -15,6 +16,7 @@ export default function Dashboard({ supabase }: { supabase: SupabaseClient }) {
   );
 
   const dispatch = useDispatch();
+  const base_url = 'https://api.netatmo.com';
 
   useEffect(() => {
     getNetatmoUserData(supabase).then((res) => {
@@ -26,22 +28,30 @@ export default function Dashboard({ supabase }: { supabase: SupabaseClient }) {
       }
       const access_token = res.data ? res.data.access_token : "";
 
-      fetch("https://rain-memo-backend.onrender.com/netatmo/getStations", {
-        method: "POST",
+      const endpoint = '/api/getstationsdata'
+      fetch(`${base_url}${endpoint}`, {
+        method: 'GET',
         headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          access_token,
-        }),
+          'Authorization': 'Bearer ' + access_token
+        }
       })
-        .then((res) => res.json())
-        .then((data) => {
-          dispatch(setStations(data));
-          if (data.length === 1) {
-            navigate(routes.device.replace(":id", data[0].home_id));
+        .then(response => response.json())
+        .then(data => {
+          const devicesWithRainSensors: Device[] = [];
+          if (data.error) {
+            return
           }
-        });
+          data.body.devices.forEach((device: Device) => {
+            const modules = device.modules.filter((module: Module) => module.type === 'NAModule3')//NAModule3 === rain sensor;
+            modules.length > 0 && devicesWithRainSensors.push(device);
+          });
+
+          dispatch(setStations(devicesWithRainSensors));
+          if (devicesWithRainSensors.length === 1) {
+            navigate(routes.device.replace(":id", devicesWithRainSensors[0].home_id));
+          }
+        })
+        .catch(error => console.error(error));
     });
   }, []);
 
