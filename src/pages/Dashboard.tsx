@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { SupabaseClient } from "@supabase/supabase-js";
 
-import { getNetatmoUserData, routes } from "@/global";
+import { getNetatmoUserData, netatmo_base_url, routes } from "@/global";
 import { setStations } from "@/actions/netatmo";
 import DefaultLayout from "@/layouts/default";
 import { Device, Module } from "@/types";
@@ -16,7 +16,6 @@ export default function Dashboard({ supabase }: { supabase: SupabaseClient }) {
   );
 
   const dispatch = useDispatch();
-  const base_url = 'https://api.netatmo.com';
 
   useEffect(() => {
     getNetatmoUserData(supabase).then((res) => {
@@ -29,7 +28,7 @@ export default function Dashboard({ supabase }: { supabase: SupabaseClient }) {
       const access_token = res.data ? res.data.access_token : "";
 
       const endpoint = '/api/getstationsdata'
-      fetch(`${base_url}${endpoint}`, {
+      fetch(`${netatmo_base_url}${endpoint}`, {
         method: 'GET',
         headers: {
           'Authorization': 'Bearer ' + access_token

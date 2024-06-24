@@ -18,7 +18,7 @@ import { fromDate } from "@internationalized/date";
 import { SupabaseClient } from "@supabase/supabase-js";
 
 import DefaultLayout from "@/layouts/default";
-import { getNetatmoUserData, rainTableHeaders, routes } from "@/global";
+import { getNetatmoUserData, netatmo_base_url, rainTableHeaders, routes } from "@/global";
 import RainFilter from "@/components/RainFilter";
 import Graph from "@/components/Graph";
 import FilterModal from "@/components/FilterModal";
@@ -66,37 +66,44 @@ export default function Device({ supabase }: { supabase: SupabaseClient }) {
                 return;
             }
             const access_token = res.data ? res.data.access_token : "";
-            const module_id = station.modules.find(
-                (module: any) => module.type === "NAModule3",
-            )._id;
+            const module_id = station.modules.find((module: any) => module.type === "NAModule3")._id;
+            const device_id = station._id;
+            const scale = "1day";
 
-            fetch("https://rain-memo-backend.onrender.com/netatmo/getRain", {
-                method: "POST",
+            const url = `${netatmo_base_url}/api/getmeasure?device_id=${device_id}&module_id=${module_id}&scale=${scale}&type=sum_rain&optimize=false&real_time=false`
+            fetch(url, {
+                method: 'POST',
                 headers: {
-                    "Content-Type": "application/json",
+                    'Authorization': 'Bearer ' + access_token,
+                    'Content-Type': 'application/json'
                 },
-                body: JSON.stringify({
-                    access_token,
-                    device_id: station._id,
-                    module_id: module_id,
-                    scale: "1day",
-                }),
-            })
-                .then((res) => res.json())
-                .then((data) => {
-                    const dataWithKey = data.map((d: any) => ({ ...d, key: uuidv4() }));
+            }).then(response => response.json())
+                .then(data => {
+                    const keys = Object.keys(data.body);
+                    const values = Object.values(data.body);
+                    if (keys.length === values.length) {
+                        const ret = keys.map((key, index) => {
+                            return {
+                                date: key,
+                                // @ts-ignore
+                                amount: values[index][0]
+                            }
+                        })
 
-                    setData(dataWithKey);
-                    setDataFormatted(
-                        dataWithKey
-                            .filter((d: any) => d.amount > 0)
-                            .map((d: any) => ({
-                                key: d.key,
-                                date: new Date(d.date * 1000).toISOString().split("T")[0],
-                                amount: d.amount,
-                            })),
-                    );
-                });
+                        const dataWithKey = ret.map((d: any) => ({ ...d, key: uuidv4() }));
+
+                        setData(dataWithKey);
+                        setDataFormatted(
+                            dataWithKey
+                                .filter((d: any) => d.amount > 0)
+                                .map((d: any) => ({
+                                    key: d.key,
+                                    date: new Date(d.date * 1000).toISOString().split("T")[0],
+                                    amount: d.amount,
+                                })),
+                        );
+                    }
+                })
         });
     }, []);
 
