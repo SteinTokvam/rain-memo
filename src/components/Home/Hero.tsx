@@ -15,7 +15,7 @@ export default function Hero() {
                     <Button color="primary" className="mt-8 hidden lg:block">Registrer deg eller logg inn</Button>
                 </div>
                 <Image src="https://placehold.co/600x400" alt="hero" width={600} height={400} />
-                <Button color="primary" className="mt-8 lg:hidden" onPress={() => navigate(routes.dashboard)}>Registrer deg eller logg inn</Button>
+                <Button color="primary" className="mt-8 lg:hidden" onClick={() => navigate(routes.dashboard)}>Registrer deg eller logg inn</Button>
             </div>
 
         </div>
