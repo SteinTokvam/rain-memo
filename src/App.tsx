@@ -10,6 +10,7 @@ import NetatmoOauth from "./pages/NetatmoOauth";
 import NetatmoRedirect from "./pages/NetatmoRedirect";
 
 import Dashboard from "@/pages/Dashboard";
+import ConfirmEmail from "./pages/ConfirmEmail";
 
 function App() {
   const supabase = createClient(
@@ -60,6 +61,7 @@ function App() {
         }
         path={routes.netatmoRedirect}
       />
+      <Route element={<ConfirmEmail supabase={supabase}/>} path={routes.confirmEmail} />
     </Routes>
   );
 }

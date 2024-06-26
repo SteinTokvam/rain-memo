@@ -30,6 +30,8 @@ export default function Device({ supabase }: { supabase: SupabaseClient }) {
     ).filter((s: any) => s.home_id === id)[0];
     const [data, setData] = useState<{ key: string; date: number; amount: number }[]>([]);
     const [dataFormatted, setDataFormatted] = useState<{ key: string; date: string; amount: number }[]>([]);
+    const [hasAllData, setHasAllData] = useState(false);
+    const [lastFetchedDate, setLastFetchedDate] = useState(0);
 
     const [sortDescriptor, setSortDescriptor] = useState({
         column: "date",
@@ -58,54 +60,72 @@ export default function Device({ supabase }: { supabase: SupabaseClient }) {
     const navigate = useNavigate();
 
     useEffect(() => {
-        getNetatmoUserData(supabase).then((res) => {
-            if (res.error) {
-                console.warn(res.error);
-                navigate(routes.dashboard);
+        function fetchNetatmoData(date_begin: number = 0) {
+            getNetatmoUserData(supabase).then((res) => {
+                if (res.error) {
+                    console.warn(res.error);
+                    navigate(routes.dashboard);
 
-                return;
-            }
-            const access_token = res.data ? res.data.access_token : "";
-            const module_id = station.modules.find((module: any) => module.type === "NAModule3")._id;
-            const device_id = station._id;
-            const scale = "1day";
+                    return;
+                }
+                const access_token = res.data ? res.data.access_token : "";
+                const module_id = station.modules.find((module: any) => module.type === "NAModule3")._id;
+                const device_id = station._id;
+                const scale = "1day";
 
-            const url = `${netatmo_base_url}/api/getmeasure?device_id=${device_id}&module_id=${module_id}&scale=${scale}&type=sum_rain&optimize=false&real_time=false`
-            fetch(url, {
-                method: 'POST',
-                headers: {
-                    'Authorization': 'Bearer ' + access_token,
-                    'Content-Type': 'application/json'
-                },
-            }).then(response => response.json())
-                .then(data => {
-                    const keys = Object.keys(data.body);
-                    const values = Object.values(data.body);
-                    if (keys.length === values.length) {
-                        const ret = keys.map((key, index) => {
-                            return {
-                                date: key,
-                                // @ts-ignore
-                                amount: values[index][0]
+                const url = `${netatmo_base_url}/api/getmeasure?device_id=${device_id}&module_id=${module_id}&scale=${scale}&date_begin=${date_begin}&type=sum_rain&optimize=false&real_time=false`
+                fetch(url, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': 'Bearer ' + access_token,
+                        'Content-Type': 'application/json'
+                    },
+                }).then(response => response.json())
+                    .then(data => {
+                        const keys = Object.keys(data.body);
+                        const values = Object.values(data.body);
+                        if (keys.length === values.length) {
+                            const ret = keys.map((key, index) => {
+                                return {
+                                    date: key,
+                                    // @ts-ignore
+                                    amount: values[index][0]
+                                }
+                            })
+                            console.log(data)
+                            const dataWithKey = ret.map((d: any) => ({ ...d, key: uuidv4() }));
+                            const lastDateUnix = dataWithKey[dataWithKey.length - 1].date;
+                            const lastDate = new Date(lastDateUnix * 1000);
+                            const today = new Date();
+                            console.log(lastDateUnix)
+                            console.log(dataWithKey[dataWithKey.length - 1].date)
+
+                            // Reset today's date time to 00:00:00 to only compare dates
+                            today.setHours(0, 0, 0, 0);
+                            lastDate.setHours(0, 0, 0, 0);
+                            if (lastDate.getTime() === today.getTime()) {
+                                setHasAllData(true);
                             }
-                        })
+                            setLastFetchedDate(lastDateUnix);
+                            setData(prevData => [...prevData, ...dataWithKey]);
+                            setDataFormatted(prevDataFormatted =>
+                                [...prevDataFormatted, ...dataWithKey
+                                    .filter((d: any) => d.amount > 0)
+                                    .map((d: any) => ({
+                                        key: d.key,
+                                        date: new Date(d.date * 1000).toISOString().split("T")[0],
+                                        amount: d.amount,
+                                    }))],
+                            );
+                        }
+                    })
+            });
+        }
 
-                        const dataWithKey = ret.map((d: any) => ({ ...d, key: uuidv4() }));
-
-                        setData(dataWithKey);
-                        setDataFormatted(
-                            dataWithKey
-                                .filter((d: any) => d.amount > 0)
-                                .map((d: any) => ({
-                                    key: d.key,
-                                    date: new Date(d.date * 1000).toISOString().split("T")[0],
-                                    amount: d.amount,
-                                })),
-                        );
-                    }
-                })
-        });
-    }, []);
+        if(!hasAllData) {
+            fetchNetatmoData(lastFetchedDate);
+        }
+    }, [hasAllData, data]);
 
     function getNumberOfDaysSinceStart(start: Date, end: Date) {
         let Difference_In_Time =
@@ -123,7 +143,7 @@ export default function Device({ supabase }: { supabase: SupabaseClient }) {
     return (
         <DefaultLayout supabase={supabase}>
             <section className="flex flex-col items-center justify-center gap-4 py-8 md:py-10">
-                {dataFormatted.length > 0 ? (
+                {hasAllData ? (
                     <>
                         <FilterModal
                             handleFilter={(fromDate: Date, toDate: Date) => {

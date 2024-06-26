@@ -10,6 +10,7 @@ export const routes = {
   login: "/login",
   netatmoOauth: "/netatmo/oauth",
   netatmoRedirect: "/netatmo/redirect",
+  confirmEmail: "/confirm-email",
 };
 
 export const rainTableHeaders = (isDay: boolean) => [

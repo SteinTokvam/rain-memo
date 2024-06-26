@@ -1,9 +1,9 @@
 import { useState, useEffect, ReactNode } from "react";
 import { Session, SupabaseClient } from "@supabase/supabase-js";
 import { Button, Input } from "@nextui-org/react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
-import { styles } from "@/global";
+import { routes, styles } from "@/global";
 import { Logo } from "@/components/icons";
 
 export default function Auth({
@@ -19,6 +19,7 @@ export default function Auth({
   const [error, setError] = useState(false);
   const [isSignUp, setIsSignUp] = useState(false);
   const [errorText, setErrorText] = useState("");
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (!supabase) {
@@ -47,6 +48,10 @@ export default function Auth({
         email,
         password,
       });
+      setEmail("");
+      setError(false);
+      setPassword("");
+      navigate(routes.confirmEmail)
     } else {
       supabase.auth
         .signInWithPassword({
