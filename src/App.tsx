@@ -20,7 +20,7 @@ function App() {
 
   return (
     <Routes>
-      <Route element={<Home />} path={routes.home} />
+      <Route element={<Home supabase={supabase} />} path={routes.home} />
       <Route
         element={
           <Auth supabase={supabase}>
@@ -61,7 +61,7 @@ function App() {
         }
         path={routes.netatmoRedirect}
       />
-      <Route element={<ConfirmEmail supabase={supabase}/>} path={routes.confirmEmail} />
+      <Route element={<ConfirmEmail supa/>} path={routes.confirmEmail} />
     </Routes>
   );
 }
