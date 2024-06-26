@@ -61,7 +61,7 @@ function App() {
         }
         path={routes.netatmoRedirect}
       />
-      <Route element={<ConfirmEmail supa/>} path={routes.confirmEmail} />
+      <Route element={<ConfirmEmail supabase={supabase} />} path={routes.confirmEmail} />
     </Routes>
   );
 }
