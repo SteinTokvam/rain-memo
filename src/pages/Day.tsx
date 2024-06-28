@@ -87,6 +87,10 @@ export default function Day({ supabase }: { supabase: SupabaseClient }) {
                     <>
                         <Graph data={dataFormatted} />
                         <Divider />
+                        <div className="shadow-lg dark:bg-default/30 rounded-lg p-4">
+                            <h1 className="text-3xl text-default-600 text-bold">Totalt i dag:</h1>
+                            <h2 className="text-lg text-default-600 text-semibold">{dataFormatted.reduce((a: any, b: any) => a + b.amount, 0).toFixed(2)}mm</h2>
+                        </div>
                         <Table isStriped>
                             <TableHeader columns={rainTableHeaders(true)}>
                                 {(column) => (
