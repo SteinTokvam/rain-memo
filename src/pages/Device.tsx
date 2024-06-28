@@ -25,9 +25,8 @@ import FilterModal from "@/components/FilterModal";
 
 export default function Device({ supabase }: { supabase: SupabaseClient }) {
     const { id } = useParams();
-    const station = useSelector(
-        (state: any) => state.rootReducer.netatmo.stations,
-    ).filter((s: any) => s.home_id === id)[0];
+    const station = useSelector((state: any) => state.rootReducer.netatmo.stations,)
+        .filter((s: any) => s.home_id === id)[0];
     const [data, setData] = useState<{ key: string; date: number; amount: number }[]>([]);
     const [dataFormatted, setDataFormatted] = useState<{ key: string; date: string; amount: number }[]>([]);
     const [hasAllData, setHasAllData] = useState(false);
@@ -62,12 +61,17 @@ export default function Device({ supabase }: { supabase: SupabaseClient }) {
     useEffect(() => {
         function fetchNetatmoData(date_begin: number = 0) {
             getNetatmoUserData(supabase).then((res) => {
+                if(!station) {
+                    navigate(routes.dashboard);
+                    return
+                }
                 if (res.error) {
                     console.warn(res.error);
                     navigate(routes.dashboard);
 
                     return;
                 }
+                console.log(station)
                 const access_token = res.data ? res.data.access_token : "";
                 const module_id = station.modules.find((module: any) => module.type === "NAModule3")._id;
                 const device_id = station._id;
@@ -122,10 +126,10 @@ export default function Device({ supabase }: { supabase: SupabaseClient }) {
             });
         }
 
-        if(!hasAllData) {
+        if (!hasAllData) {
             fetchNetatmoData(lastFetchedDate);
         }
-    }, [hasAllData, data]);
+    }, [hasAllData, data, station]);
 
     function getNumberOfDaysSinceStart(start: Date, end: Date) {
         let Difference_In_Time =
