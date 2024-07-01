@@ -7,8 +7,9 @@ import { useDateFormatter } from "@react-aria/i18n";
 import { useNavigate, useParams } from "react-router-dom";
 import { SupabaseClient } from "@supabase/supabase-js";
 import { useSelector } from "react-redux";
+import {I18nProvider} from "@react-aria/i18n";
 
-export default function CreateEvent({supabase}: {supabase: SupabaseClient}) {
+export default function CreateEvent({ supabase }: { supabase: SupabaseClient }) {
     const [event, setEvent] = useState("");
     const [eventDate, setEventDate] = useState(parseDate("2024-04-04"));
     const navigate = useNavigate();
@@ -30,22 +31,25 @@ export default function CreateEvent({supabase}: {supabase: SupabaseClient}) {
                 onClear={() => setEvent("")}
             />
             <Spacer y={1} />
-            <DateInput
-                label="Dato for hendelse"
-                value={eventDate}
-                onChange={setEventDate}
-            />
+            <I18nProvider locale="no-NB">
+                <DateInput
+                    label="Dato for hendelse"
+                    value={eventDate}
+                    onChange={setEventDate}
+
+                />
+            </I18nProvider>
             <p className="text-default-500 text-sm">
                 Valgt dato: {eventDate ? formatter.format(eventDate.toDate(getLocalTimeZone())) : "--"}
             </p>
             <Button color="primary" onClick={async () => {
                 const { error } = await supabase
-                .from("user_events")
-                .insert({
-                    event_text: event,
-                    event_date: eventDate.toString(),
-                    device_id: station.home_id
-                }).select()
+                    .from("user_events")
+                    .insert({
+                        event_text: event,
+                        event_date: eventDate.toString(),
+                        device_id: station.home_id
+                    }).select()
                 console.log(error)
                 navigate(routes.device.replace(":id", station.home_id))
             }}>Opprett hendelse</Button>
