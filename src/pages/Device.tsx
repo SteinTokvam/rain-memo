@@ -74,7 +74,7 @@ export default function Device({ supabase }: { supabase: SupabaseClient }) {
 
                     return;
                 }
-                console.log(station)
+
                 const access_token = res.data ? res.data.access_token : "";
                 const module_id = station.modules.find((module: any) => module.type === "NAModule3")._id;
                 const device_id = station._id;
@@ -99,13 +99,11 @@ export default function Device({ supabase }: { supabase: SupabaseClient }) {
                                     amount: values[index][0]
                                 }
                             })
-                            console.log(data)
+
                             const dataWithKey = ret.map((d: any) => ({ ...d, key: uuidv4() }));
                             const lastDateUnix = dataWithKey[dataWithKey.length - 1].date;
                             const lastDate = new Date(lastDateUnix * 1000);
                             const today = new Date();
-                            console.log(lastDateUnix)
-                            console.log(dataWithKey[dataWithKey.length - 1].date)
 
                             // Reset today's date time to 00:00:00 to only compare dates
                             today.setHours(0, 0, 0, 0);
@@ -153,40 +151,28 @@ export default function Device({ supabase }: { supabase: SupabaseClient }) {
         return result;
     }
 
-    function mergeEvents(listA: any[], listB: any[]): any[] {
-        // Lage en kopi av listB for å unngå å mutere originalen
-        let result = [...listB];
-      
-        console.log(listA)
-        // Opprette en map for raskere oppslag basert på dato
+    function mergeEvents(userEvents: any[], dataFormatted: any[]): any[] {
+        let result = [...dataFormatted];
         const eventMap = new Map<string, any>();
-      
-        // Fylle opp map med elementer fra listB
-        for (const event of listB) {
-          eventMap.set(event.date, event);
-        }
-        console.log(eventMap)
-      
-        // Gå gjennom listA og kopiere eller opprette nye elementer i result
-        for (const eventA of listA) {
-          if (eventMap.has(eventA.event_date)) {
-            // Hvis datoen finnes, kopier event_text fra listA til result
-            eventMap.get(eventA.event_date)!.event_text = eventA.event_text;
-          } else {
-            // Hvis datoen ikke finnes, opprett et nytt element
-            result.push({
-              date: eventA.event_date,
-              event_text: eventA.event_text,
-              amount: 0,
-            });
-          }
-        }
-      
-        return result;
-      }
 
-      console.log(mergeEvents(userEvents, dataFormatted))
-      
+        for (const event of dataFormatted) {
+            eventMap.set(event.date, event);
+        }
+
+        for (const eventA of userEvents) {
+            if (eventMap.has(eventA.event_date)) {
+                eventMap.get(eventA.event_date)!.event_text = eventA.event_text;
+            } else {
+                result.push({
+                    date: eventA.event_date,
+                    event_text: eventA.event_text,
+                    amount: 0,
+                });
+            }
+        }
+
+        return result;
+    }
 
     return (
         <DefaultLayout supabase={supabase}>
@@ -227,16 +213,6 @@ export default function Device({ supabase }: { supabase: SupabaseClient }) {
                                             amount: d.amount,
                                         })),
                                 );
-                                console.log(
-                                    data
-                                        .slice(from, to + 1)
-                                        .filter((d: any) => d.amount > 0)
-                                        .map((d: any) => ({
-                                            key: d.key,
-                                            date: new Date(d.date * 1000).toISOString().split("T")[0],
-                                            amount: d.amount,
-                                        })),
-                                );
                             }}
                             isOpen={isOpen}
                             maxDate={fromDate(
@@ -253,7 +229,9 @@ export default function Device({ supabase }: { supabase: SupabaseClient }) {
                                 routes.createEvent
                                     .replace(":id", station.home_id),
                             );
-                        }}>Legg til en hendelse</Button>
+                        }}>
+                            Legg til en hendelse
+                        </Button>
 
                         <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
                             <div className="shadow-lg dark:bg-default/30 rounded-lg p-4">
