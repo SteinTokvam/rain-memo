@@ -133,6 +133,7 @@ export default function Device({ supabase }: { supabase: SupabaseClient }) {
         supabase
             .from("user_events")
             .select("*")
+            .eq("device_id", station.home_id)
             .then((res: any) => {
                 setUserEvents(res.data);
             })
