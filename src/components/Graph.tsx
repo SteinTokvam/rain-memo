@@ -2,7 +2,6 @@ import {
     ComposedChart,
     Line,
     ResponsiveContainer,
-    Scatter,
     Tooltip,
     XAxis,
     YAxis,
