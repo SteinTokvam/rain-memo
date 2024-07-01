@@ -15,6 +15,11 @@ export default function Features() {
                 <h2 className="text-3xl font-bold">Filtrering</h2>
                 <p>Filtrer oversikten til å vise data for bare den inneværende måneden, forrige måned eller forrige uke. Du kan også velge å egne datoer å vise data for.</p>
             </div>
+
+            <div className="">
+                <h2 className="text-3xl font-bold">Hendelser</h2>
+                <p>Skjedde det noe spesielt en dag i forhold til regnværet? Lurer du for eksempel på hvor mye det har regnet siden du plantet i blomsterbedet? Legg inn en hendelse for det, så kommer den opp i grafen.</p>
+            </div>
         </div>
     );
 }

@@ -1,4 +1,5 @@
 import {
+    Button,
     Divider,
     Spinner,
     Table,
@@ -32,6 +33,8 @@ export default function Device({ supabase }: { supabase: SupabaseClient }) {
     const [hasAllData, setHasAllData] = useState(false);
     const [lastFetchedDate, setLastFetchedDate] = useState(0);
 
+    const [userEvents, setUserEvents] = useState<any[]>([]);
+
     const [sortDescriptor, setSortDescriptor] = useState({
         column: "date",
         direction: "descending",
@@ -61,7 +64,7 @@ export default function Device({ supabase }: { supabase: SupabaseClient }) {
     useEffect(() => {
         function fetchNetatmoData(date_begin: number = 0) {
             getNetatmoUserData(supabase).then((res) => {
-                if(!station) {
+                if (!station) {
                     navigate(routes.dashboard);
                     return
                 }
@@ -71,7 +74,7 @@ export default function Device({ supabase }: { supabase: SupabaseClient }) {
 
                     return;
                 }
-                console.log(station)
+
                 const access_token = res.data ? res.data.access_token : "";
                 const module_id = station.modules.find((module: any) => module.type === "NAModule3")._id;
                 const device_id = station._id;
@@ -96,13 +99,11 @@ export default function Device({ supabase }: { supabase: SupabaseClient }) {
                                     amount: values[index][0]
                                 }
                             })
-                            console.log(data)
+
                             const dataWithKey = ret.map((d: any) => ({ ...d, key: uuidv4() }));
                             const lastDateUnix = dataWithKey[dataWithKey.length - 1].date;
                             const lastDate = new Date(lastDateUnix * 1000);
                             const today = new Date();
-                            console.log(lastDateUnix)
-                            console.log(dataWithKey[dataWithKey.length - 1].date)
 
                             // Reset today's date time to 00:00:00 to only compare dates
                             today.setHours(0, 0, 0, 0);
@@ -129,6 +130,13 @@ export default function Device({ supabase }: { supabase: SupabaseClient }) {
         if (!hasAllData) {
             fetchNetatmoData(lastFetchedDate);
         }
+        supabase
+            .from("user_events")
+            .select("*")
+            .eq("device_id", station.home_id)
+            .then((res: any) => {
+                setUserEvents(res.data);
+            })
     }, [hasAllData, data, station]);
 
     function getNumberOfDaysSinceStart(start: Date, end: Date) {
@@ -141,6 +149,29 @@ export default function Device({ supabase }: { supabase: SupabaseClient }) {
     function addDays(date: Date, days: number) {
         const result = new Date(date);
         result.setDate(result.getDate() + days);
+        return result;
+    }
+
+    function mergeEvents(userEvents: any[], dataFormatted: any[]): any[] {
+        let result = [...dataFormatted];
+        const eventMap = new Map<string, any>();
+
+        for (const event of dataFormatted) {
+            eventMap.set(event.date, event);
+        }
+
+        for (const eventA of userEvents) {
+            if (eventMap.has(eventA.event_date)) {
+                eventMap.get(eventA.event_date)!.event_text = eventA.event_text;
+            } else {
+                result.push({
+                    date: eventA.event_date,
+                    event_text: eventA.event_text,
+                    amount: 0,
+                });
+            }
+        }
+
         return result;
     }
 
@@ -183,16 +214,6 @@ export default function Device({ supabase }: { supabase: SupabaseClient }) {
                                             amount: d.amount,
                                         })),
                                 );
-                                console.log(
-                                    data
-                                        .slice(from, to + 1)
-                                        .filter((d: any) => d.amount > 0)
-                                        .map((d: any) => ({
-                                            key: d.key,
-                                            date: new Date(d.date * 1000).toISOString().split("T")[0],
-                                            amount: d.amount,
-                                        })),
-                                );
                             }}
                             isOpen={isOpen}
                             maxDate={fromDate(
@@ -202,8 +223,16 @@ export default function Device({ supabase }: { supabase: SupabaseClient }) {
                             minDate={fromDate(new Date(data[0].date.valueOf() * 1000), "Europe/Oslo")}
                             onOpenChange={onOpenChange}
                         />
-                        <Graph data={dataFormatted} />
+                        <Graph data={mergeEvents(userEvents, dataFormatted).sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())} />
                         <Divider />
+                        <Button onClick={() => {
+                            navigate(
+                                routes.createEvent
+                                    .replace(":id", station.home_id),
+                            );
+                        }}>
+                            Legg til en hendelse
+                        </Button>
 
                         <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
                             <div className="shadow-lg dark:bg-default/30 rounded-lg p-4">
