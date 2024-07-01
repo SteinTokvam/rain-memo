@@ -246,7 +246,7 @@ export default function Device({ supabase }: { supabase: SupabaseClient }) {
                             minDate={fromDate(new Date(data[0].date.valueOf() * 1000), "Europe/Oslo")}
                             onOpenChange={onOpenChange}
                         />
-                        <Graph data={mergeEvents(userEvents, dataFormatted)} />
+                        <Graph data={mergeEvents(userEvents, dataFormatted).sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())} />
                         <Divider />
                         <Button onClick={() => {
                             navigate(
