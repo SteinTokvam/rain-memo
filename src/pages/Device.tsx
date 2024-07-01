@@ -1,4 +1,5 @@
 import {
+    Button,
     Divider,
     Spinner,
     Table,
@@ -32,6 +33,8 @@ export default function Device({ supabase }: { supabase: SupabaseClient }) {
     const [hasAllData, setHasAllData] = useState(false);
     const [lastFetchedDate, setLastFetchedDate] = useState(0);
 
+    const [userEvents, setUserEvents] = useState<any[]>([]);
+
     const [sortDescriptor, setSortDescriptor] = useState({
         column: "date",
         direction: "descending",
@@ -61,7 +64,7 @@ export default function Device({ supabase }: { supabase: SupabaseClient }) {
     useEffect(() => {
         function fetchNetatmoData(date_begin: number = 0) {
             getNetatmoUserData(supabase).then((res) => {
-                if(!station) {
+                if (!station) {
                     navigate(routes.dashboard);
                     return
                 }
@@ -129,6 +132,12 @@ export default function Device({ supabase }: { supabase: SupabaseClient }) {
         if (!hasAllData) {
             fetchNetatmoData(lastFetchedDate);
         }
+        supabase
+            .from("user_events")
+            .select("*")
+            .then((res: any) => {
+                setUserEvents(res.data);
+            })
     }, [hasAllData, data, station]);
 
     function getNumberOfDaysSinceStart(start: Date, end: Date) {
@@ -143,6 +152,41 @@ export default function Device({ supabase }: { supabase: SupabaseClient }) {
         result.setDate(result.getDate() + days);
         return result;
     }
+
+    function mergeEvents(listA: any[], listB: any[]): any[] {
+        // Lage en kopi av listB for å unngå å mutere originalen
+        let result = [...listB];
+      
+        console.log(listA)
+        // Opprette en map for raskere oppslag basert på dato
+        const eventMap = new Map<string, any>();
+      
+        // Fylle opp map med elementer fra listB
+        for (const event of listB) {
+          eventMap.set(event.date, event);
+        }
+        console.log(eventMap)
+      
+        // Gå gjennom listA og kopiere eller opprette nye elementer i result
+        for (const eventA of listA) {
+          if (eventMap.has(eventA.event_date)) {
+            // Hvis datoen finnes, kopier event_text fra listA til result
+            eventMap.get(eventA.event_date)!.event_text = eventA.event_text;
+          } else {
+            // Hvis datoen ikke finnes, opprett et nytt element
+            result.push({
+              date: eventA.event_date,
+              event_text: eventA.event_text,
+              amount: 0,
+            });
+          }
+        }
+      
+        return result;
+      }
+
+      console.log(mergeEvents(userEvents, dataFormatted))
+      
 
     return (
         <DefaultLayout supabase={supabase}>
@@ -202,8 +246,14 @@ export default function Device({ supabase }: { supabase: SupabaseClient }) {
                             minDate={fromDate(new Date(data[0].date.valueOf() * 1000), "Europe/Oslo")}
                             onOpenChange={onOpenChange}
                         />
-                        <Graph data={dataFormatted} />
+                        <Graph data={mergeEvents(userEvents, dataFormatted)} />
                         <Divider />
+                        <Button onClick={() => {
+                            navigate(
+                                routes.createEvent
+                                    .replace(":id", station.home_id),
+                            );
+                        }}>Legg til en hendelse</Button>
 
                         <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
                             <div className="shadow-lg dark:bg-default/30 rounded-lg p-4">
