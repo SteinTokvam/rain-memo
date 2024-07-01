@@ -44,6 +44,7 @@ export default function Graph({
                             <Line
                                 activeDot={{ r: 8 }}
                                 dataKey="amount"
+                                // @ts-ignore
                                 dot={<CustomDot />}
                                 stroke="#67a1d4"
                                 type="monotone"
