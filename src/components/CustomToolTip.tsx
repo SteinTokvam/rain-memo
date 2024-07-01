@@ -4,7 +4,7 @@ export default function CustomToolTip({ active, payload }) {
         return (
             <>
                 {payload.map((pld: any) => (
-                    <div key={pld.payload.date} className="bg-slate-800 text-white p-2">
+                    <div key={pld.payload.date} className="bg-slate-800 text-white p-2 max-w-32">
                         <div className="bg-slate-600 text-white p-2 font-bold">
                             {pld.payload.date}
                         </div>
