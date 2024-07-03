@@ -12,6 +12,7 @@ import NetatmoRedirect from "./pages/NetatmoRedirect";
 import Dashboard from "@/pages/Dashboard";
 import ConfirmEmail from "./pages/ConfirmEmail";
 import CreateEvent from "./pages/CreateEvent";
+import Events from "./pages/Events";
 
 function App() {
   const supabase = createClient(
@@ -37,6 +38,13 @@ function App() {
           </Auth>
         }
         path={routes.device}
+      />
+      <Route element={
+        <Auth supabase={supabase}>
+          <Events supabase={supabase} />
+        </Auth>
+      } 
+      path={routes.events}
       />
       <Route
         element={

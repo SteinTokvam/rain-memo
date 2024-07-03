@@ -6,6 +6,7 @@ export const routes = {
   home: "/",
   dashboard: "/dashboard",
   device: "/device/:id",
+  events: "/device/:id/events",
   createEvent: "/device/:id/create-event",
   day: "/device/:id/day/:date",
   login: "/login",

@@ -127,6 +127,8 @@ export default function Device({ supabase }: { supabase: SupabaseClient }) {
             });
         }
 
+        document.title = "RainMemo - Device";
+
         if (!hasAllData) {
             fetchNetatmoData(lastFetchedDate);
         }
@@ -226,13 +228,8 @@ export default function Device({ supabase }: { supabase: SupabaseClient }) {
                         <Graph data={mergeEvents(userEvents, dataFormatted).sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())} />
                         <Divider />
                         <Button onClick={() => {
-                            navigate(
-                                routes.createEvent
-                                    .replace(":id", station.home_id),
-                            );
-                        }}>
-                            Legg til en hendelse
-                        </Button>
+                            navigate(routes.events.replace(":id", station.home_id));
+                        }}>Se alle hendelser</Button>
 
                         <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
                             <div className="shadow-lg dark:bg-default/30 rounded-lg p-4">

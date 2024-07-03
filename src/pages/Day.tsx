@@ -78,6 +78,7 @@ export default function Day({ supabase }: { supabase: SupabaseClient }) {
                     }
                 })
         });
+        document.title = "RainMemo - Dag";
     }, []);
 
     return (
