@@ -23,12 +23,14 @@ export default function FilterModal({
   minDate,
   maxDate,
   handleFilter,
+  setFiltered
 }: {
   isOpen: boolean;
   onOpenChange: (isOpen: boolean) => void;
   minDate: DateValue;
   maxDate: DateValue;
   handleFilter: (minDate: Date, maxDate: Date) => void;
+  setFiltered: (isFiltered: boolean) => void
 }) {
   let [value, setValue] = useState({
     start: startOfMonth(today(getLocalTimeZone())),
@@ -110,6 +112,7 @@ export default function FilterModal({
               <Button
                 onPress={() => {
                   handleFilter(new Date(1970, 0, 1), new Date(1970, 0, 1));
+                  setFiltered(false);
                   onClose();
                 }}
               >
@@ -128,6 +131,7 @@ export default function FilterModal({
                     value.start.toDate("Europe/Oslo"),
                     value.end.toDate("Europe/Oslo"),
                   );
+                  setFiltered(true);
                 }}
               >
                 Filtrer

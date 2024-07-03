@@ -32,6 +32,7 @@ export default function Device({ supabase }: { supabase: SupabaseClient }) {
     const [dataFormatted, setDataFormatted] = useState<{ key: string; date: string; amount: number }[]>([]);
     const [hasAllData, setHasAllData] = useState(false);
     const [lastFetchedDate, setLastFetchedDate] = useState(0);
+    const [isFiltered, setIsFiltered] = useState(false);
 
     const [userEvents, setUserEvents] = useState<any[]>([]);
 
@@ -132,14 +133,16 @@ export default function Device({ supabase }: { supabase: SupabaseClient }) {
         if (!hasAllData) {
             fetchNetatmoData(lastFetchedDate);
         }
-        supabase
-            .from("user_events")
-            .select("*")
-            .eq("device_id", station.home_id)
-            .then((res: any) => {
-                setUserEvents(res.data);
-            })
-    }, [hasAllData, data, station]);
+        if (!isFiltered) {
+            supabase
+                .from("user_events")
+                .select("*")
+                .eq("device_id", station.home_id)
+                .then((res: any) => {
+                    setUserEvents(res.data);
+                })
+        }
+    }, [hasAllData, data, station, isFiltered]);
 
     function getNumberOfDaysSinceStart(start: Date, end: Date) {
         let Difference_In_Time =
@@ -183,15 +186,15 @@ export default function Device({ supabase }: { supabase: SupabaseClient }) {
                 {hasAllData ? (
                     <>
                         <FilterModal
-                            handleFilter={(fromDate: Date, toDate: Date) => {
-                                const from = data.findIndex(
+                            handleFilter={(fromDate: Date, toDate: Date) => {//TODO: må filtrere hendelser også
+                                const fromData = data.findIndex(
                                     (d: any) => d.date - 43200 === fromDate.getTime() / 1000,
                                 );
-                                const to = data.findIndex(
+                                const toData = data.findIndex(
                                     (d: any) => d.date - 43200 === toDate.getTime() / 1000,
                                 );
 
-                                if (from === -1 || to === -1) {
+                                if (fromData === -1 || toData === -1) {
                                     setDataFormatted(
                                         data
                                             .filter((d: any) => d.amount > 0)
@@ -206,9 +209,10 @@ export default function Device({ supabase }: { supabase: SupabaseClient }) {
 
                                     return;
                                 }
+
                                 setDataFormatted(
                                     data
-                                        .slice(from, to + 1)
+                                        .slice(fromData, toData + 1)
                                         .filter((d: any) => d.amount > 0)
                                         .map((d: any) => ({
                                             key: d.key,
@@ -216,6 +220,10 @@ export default function Device({ supabase }: { supabase: SupabaseClient }) {
                                             amount: d.amount,
                                         })),
                                 );
+                                setUserEvents((prevEvents) => prevEvents.filter((d: any) => d.event_date >= fromDate.toISOString().split('T')[0] && d.event_date <= toDate.toISOString().split('T')[0]));
+                            }}
+                            setFiltered={(isFiltered) => {
+                                setIsFiltered(isFiltered);
                             }}
                             isOpen={isOpen}
                             maxDate={fromDate(
@@ -225,94 +233,120 @@ export default function Device({ supabase }: { supabase: SupabaseClient }) {
                             minDate={fromDate(new Date(data[0].date.valueOf() * 1000), "Europe/Oslo")}
                             onOpenChange={onOpenChange}
                         />
-                        <Graph data={mergeEvents(userEvents, dataFormatted).sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())} />
+                        {
+                            dataFormatted.length > 0 ? <Graph data={mergeEvents(userEvents, dataFormatted).sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())} /> :
+                                <h1 className="text-3xl text-default-600 text-bold">Ingen regndata for valgt periode</h1>
+                        }
                         <Divider />
                         <Button onClick={() => {
                             navigate(routes.events.replace(":id", station.home_id));
                         }}>Se alle hendelser</Button>
+                        { isFiltered && userEvents.length > 0 &&
+                            <div className="shadow-lg dark:bg-default/30 rounded-lg p-4">
+                                <h1 className="text-xl text-default-900">
+                                    Hendelser i valgt periode:
 
+                                </h1>
+                                <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
+                                    {
+                                        userEvents.map((e) => (
+                                            <div key={e.id} className="shadow-md dark:bg-default/30 rounded-md p-4 mb-4 mt-4">
+                                                <p>{e.event_text}</p>
+                                                <p>{e.event_date}</p>
+                                            </div>
+                                        ))
+                                    }
+                                </div>
+                            </div>
+                        }
                         <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
-                            <div className="shadow-lg dark:bg-default/30 rounded-lg p-4">
-                                <h1 className="text-xl text-default-900">
-                                    Total nedbør:
-                                </h1>
-                                <h2 className="text-md text-default-600">
-                                    {dataFormatted
-                                        .reduce((a: any, b: any) => a + b.amount, 0)
-                                        .toFixed(2)}{" "}
-                                    mm
-                                </h2>
-                            </div>
-                            <div className="shadow-lg dark:bg-default/30 rounded-lg p-4">
-                                <h1 className="text-xl text-default-900">
-                                    Antall regndager:
-                                </h1>
-                                <h2 className="text-md text-default-600">
-                                    {dataFormatted.length}
-                                </h2>
-                            </div>
 
-                            <div className="shadow-lg dark:bg-default/30 rounded-lg p-4">
-                                <h1 className="text-xl text-default-900">
-                                    Dagen med mest regn:
-                                </h1>
-                                <h2 className="text-md text-default-600">
-                                    {
-                                        dataFormatted.reduce((a: any, b: any) =>
-                                            a.amount > b.amount ? a : b,
-                                        ).date + " "
-                                    }
-                                    (
-                                    {
-                                        dataFormatted.reduce((a: any, b: any) =>
-                                            a.amount > b.amount ? a : b,
-                                        ).amount
-                                    }{" "}
-                                    mm)
-                                </h2>
-                            </div>
-                            <div className="shadow-lg dark:bg-default/30 rounded-lg p-4">
-                                <h1 className="text-xl text-default-900">
-                                    Dagen med minst regn:
-                                </h1>
-                                <h2 className="text-md text-default-600">
-                                    {
-                                        dataFormatted.reduce((a: any, b: any) =>
-                                            a.amount < b.amount ? a : b,
-                                        ).date + " "
-                                    }
-                                    (
-                                    {
-                                        dataFormatted.reduce((a: any, b: any) =>
-                                            a.amount < b.amount ? a : b,
-                                        ).amount
-                                    }{" "}
-                                    mm)
-                                </h2>
-                            </div>
+                            {
+                                dataFormatted.length > 0 &&
+                                <>
+                                    <div className="shadow-lg dark:bg-default/30 rounded-lg p-4">
+                                        <h1 className="text-xl text-default-900">
+                                            Total nedbør:
+                                        </h1>
+                                        <h2 className="text-md text-default-600">
+                                            {dataFormatted
+                                                .reduce((a: any, b: any) => a + b.amount, 0)
+                                                .toFixed(2)}{" "}
+                                            mm
+                                        </h2>
+                                    </div>
+                                    <div className="shadow-lg dark:bg-default/30 rounded-lg p-4">
+                                        <h1 className="text-xl text-default-900">
+                                            Antall regndager:
+                                        </h1>
+                                        <h2 className="text-md text-default-600">
+                                            {dataFormatted.length}
+                                        </h2>
+                                    </div>
 
-                            <div className="shadow-lg dark:bg-default/30 rounded-lg p-4">
-                                <h1 className="text-xl text-default-900">
-                                    Antall dager i snitt mellom hver regndag:
-                                </h1>
-                                <h2 className="text-md text-default-600 py-4">
-                                    {
-                                        (getNumberOfDaysSinceStart(new Date(dataFormatted[0].date), new Date(dataFormatted[dataFormatted.length - 1].date)) / dataFormatted.length).toFixed(0) + " dager"
-                                    }
-                                </h2>
-                                {
-                                    //om vi er før tidspunktet for gjetningen av neste regndag så print gjetningen
-                                    addDays(new Date(dataFormatted[dataFormatted.length - 1].date),
-                                        Math.round(getNumberOfDaysSinceStart(new Date(dataFormatted[0].date), new Date(dataFormatted[dataFormatted.length - 1].date)) / dataFormatted.length)).getTime() > Date.now() &&
-                                    <h2 className="text-md text-default-600">
-                                        Kan dermed forvente regn
+                                    <div className="shadow-lg dark:bg-default/30 rounded-lg p-4">
+                                        <h1 className="text-xl text-default-900">
+                                            Dagen med mest regn:
+                                        </h1>
+                                        <h2 className="text-md text-default-600">
+                                            {
+                                                dataFormatted.reduce((a: any, b: any) =>
+                                                    a.amount > b.amount ? a : b,
+                                                ).date + " "
+                                            }
+                                            (
+                                            {
+                                                dataFormatted.reduce((a: any, b: any) =>
+                                                    a.amount > b.amount ? a : b,
+                                                ).amount
+                                            }{" "}
+                                            mm)
+                                        </h2>
+                                    </div>
+                                    <div className="shadow-lg dark:bg-default/30 rounded-lg p-4">
+                                        <h1 className="text-xl text-default-900">
+                                            Dagen med minst regn:
+                                        </h1>
+                                        <h2 className="text-md text-default-600">
+                                            {
+                                                dataFormatted.reduce((a: any, b: any) =>
+                                                    a.amount < b.amount ? a : b,
+                                                ).date + " "
+                                            }
+                                            (
+                                            {
+                                                dataFormatted.reduce((a: any, b: any) =>
+                                                    a.amount < b.amount ? a : b,
+                                                ).amount
+                                            }{" "}
+                                            mm)
+                                        </h2>
+                                    </div>
+
+                                    <div className="shadow-lg dark:bg-default/30 rounded-lg p-4">
+                                        <h1 className="text-xl text-default-900">
+                                            Antall dager i snitt mellom hver regndag:
+                                        </h1>
+                                        <h2 className="text-md text-default-600 py-4">
+                                            {
+                                                (getNumberOfDaysSinceStart(new Date(dataFormatted[0].date), new Date(dataFormatted[dataFormatted.length - 1].date)) / dataFormatted.length).toFixed(0) + " dager"
+                                            }
+                                        </h2>
                                         {
-                                            " " + addDays(new Date(dataFormatted[dataFormatted.length - 1].date),
-                                                Math.round(getNumberOfDaysSinceStart(new Date(dataFormatted[0].date), new Date(dataFormatted[dataFormatted.length - 1].date)) / dataFormatted.length)).toLocaleDateString("nb-NO") + " "
-                                        }
-                                        neste gang.
-                                    </h2>}
-                            </div>
+                                            //om vi er før tidspunktet for gjetningen av neste regndag så print gjetningen
+                                            addDays(new Date(dataFormatted[dataFormatted.length - 1].date),
+                                                Math.round(getNumberOfDaysSinceStart(new Date(dataFormatted[0].date), new Date(dataFormatted[dataFormatted.length - 1].date)) / dataFormatted.length)).getTime() > Date.now() &&
+                                            <h2 className="text-md text-default-600">
+                                                Kan dermed forvente regn
+                                                {
+                                                    " " + addDays(new Date(dataFormatted[dataFormatted.length - 1].date),
+                                                        Math.round(getNumberOfDaysSinceStart(new Date(dataFormatted[0].date), new Date(dataFormatted[dataFormatted.length - 1].date)) / dataFormatted.length)).toLocaleDateString("nb-NO") + " "
+                                                }
+                                                neste gang.
+                                            </h2>}
+                                    </div>
+                                </>
+                            }
 
                         </div>
                         <RainFilter handleClick={onOpen} />
