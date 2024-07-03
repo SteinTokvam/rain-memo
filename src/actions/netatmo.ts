@@ -4,3 +4,17 @@ export const setStations = (stations: any) => ({
     stations,
   },
 });
+
+export const setData = (data: any[]) => ({
+  type: "SET_DATA",
+  payload: {
+    data,
+  },
+});
+
+export const addToData = (data: any[]) => ({
+  type: "ADD_TO_DATA",
+  payload: {
+    data,
+  },
+});

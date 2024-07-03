@@ -28,7 +28,7 @@ export default function Device({ supabase }: { supabase: SupabaseClient }) {
     const { id } = useParams();
     const station = useSelector((state: any) => state.rootReducer.netatmo.stations,)
         .filter((s: any) => s.home_id === id)[0];
-    const [data, setData] = useState<{ key: string; date: number; amount: number }[]>([]);
+    const [allNetatmoData, setAllNetatmoData] = useState<{ key: string; date: number; amount: number }[]>([]);
     const [dataFormatted, setDataFormatted] = useState<{ key: string; date: string; amount: number }[]>([]);
     const [hasAllData, setHasAllData] = useState(false);
     const [lastFetchedDate, setLastFetchedDate] = useState(0);
@@ -113,7 +113,7 @@ export default function Device({ supabase }: { supabase: SupabaseClient }) {
                                 setHasAllData(true);
                             }
                             setLastFetchedDate(lastDateUnix);
-                            setData(prevData => [...prevData, ...dataWithKey]);
+                            setAllNetatmoData(prevData => [...prevData, ...dataWithKey]);
                             setDataFormatted(prevDataFormatted =>
                                 [...prevDataFormatted, ...dataWithKey
                                     .filter((d: any) => d.amount > 0)
@@ -142,7 +142,7 @@ export default function Device({ supabase }: { supabase: SupabaseClient }) {
                     setUserEvents(res.data);
                 })
         }
-    }, [hasAllData, data, station, isFiltered]);
+    }, [hasAllData, allNetatmoData, station, isFiltered]);
 
     function getNumberOfDaysSinceStart(start: Date, end: Date) {
         let Difference_In_Time =
@@ -187,16 +187,16 @@ export default function Device({ supabase }: { supabase: SupabaseClient }) {
                     <>
                         <FilterModal
                             handleFilter={(fromDate: Date, toDate: Date) => {//TODO: må filtrere hendelser også
-                                const fromData = data.findIndex(
+                                const fromData = allNetatmoData.findIndex(
                                     (d: any) => d.date - 43200 === fromDate.getTime() / 1000,
                                 );
-                                const toData = data.findIndex(
+                                const toData = allNetatmoData.findIndex(
                                     (d: any) => d.date - 43200 === toDate.getTime() / 1000,
                                 );
 
                                 if (fromData === -1 || toData === -1) {
                                     setDataFormatted(
-                                        data
+                                        allNetatmoData
                                             .filter((d: any) => d.amount > 0)
                                             .map((d: any) => ({
                                                 key: d.key as string,
@@ -211,7 +211,7 @@ export default function Device({ supabase }: { supabase: SupabaseClient }) {
                                 }
 
                                 setDataFormatted(
-                                    data
+                                    allNetatmoData
                                         .slice(fromData, toData + 1)
                                         .filter((d: any) => d.amount > 0)
                                         .map((d: any) => ({
@@ -227,10 +227,10 @@ export default function Device({ supabase }: { supabase: SupabaseClient }) {
                             }}
                             isOpen={isOpen}
                             maxDate={fromDate(
-                                new Date(data[data.length - 1].date.valueOf() * 1000),
+                                new Date(allNetatmoData[allNetatmoData.length - 1].date.valueOf() * 1000),
                                 "Europe/Oslo",
                             )}
-                            minDate={fromDate(new Date(data[0].date.valueOf() * 1000), "Europe/Oslo")}
+                            minDate={fromDate(new Date(allNetatmoData[0].date.valueOf() * 1000), "Europe/Oslo")}
                             onOpenChange={onOpenChange}
                         />
                         {
