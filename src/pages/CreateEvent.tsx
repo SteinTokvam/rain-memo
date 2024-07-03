@@ -12,7 +12,7 @@ import DefaultLayout from "@/layouts/default";
 
 export default function CreateEvent({ supabase }: { supabase: SupabaseClient }) {
     const [event, setEvent] = useState("");
-    const [eventDate, setEventDate] = useState(parseDate("2024-04-04"));
+    const [eventDate, setEventDate] = useState(parseDate(new Date().toISOString().split('T')[0]));
     const navigate = useNavigate();
     let formatter = useDateFormatter({ dateStyle: "full" });
     const { id } = useParams();

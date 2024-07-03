@@ -36,6 +36,9 @@ export default function Events({ supabase }: { supabase: SupabaseClient }) {
                                 <div>
                                     <p>{event.event_text}</p>
                                     <p>{event.event_date}</p>
+                                    {
+                                        //<p>Det har regnet <b>xx</b> mm siden {event.event_date}</p>
+                                    }
                                 </div>
                                 <Button
                                 className="justify-self-end"
