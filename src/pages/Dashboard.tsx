@@ -1,5 +1,5 @@
 import { Card, CardBody, CardHeader, Divider, Spinner } from "@nextui-org/react";
-import { useEffect } from "react";
+import { Suspense, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { SupabaseClient } from "@supabase/supabase-js";
@@ -8,6 +8,7 @@ import { getNetatmoUserData, netatmo_base_url, routes } from "@/global";
 import { setStations } from "@/actions/netatmo";
 import DefaultLayout from "@/layouts/default";
 import { Device, Module } from "@/types";
+import { useTranslation } from "react-i18next";
 
 export default function Dashboard({ supabase }: { supabase: SupabaseClient }) {
   const navigate = useNavigate();
@@ -16,6 +17,7 @@ export default function Dashboard({ supabase }: { supabase: SupabaseClient }) {
   );
 
   const dispatch = useDispatch();
+  const { t } = useTranslation('dashboard');
 
   useEffect(() => {
     getNetatmoUserData(supabase).then((res) => {
@@ -56,47 +58,49 @@ export default function Dashboard({ supabase }: { supabase: SupabaseClient }) {
   }, []);
 
   return (
-    <DefaultLayout supabase={supabase}>
-      <section className="flex flex-col items-center justify-center gap-4 py-8 md:py-10">
-        {stations ?
-          <>
-            <h1 className="text-3xl text-default-600">Dine målestasjoner</h1>
-            <Divider />
+    <Suspense fallback={<Spinner />}>
+      <DefaultLayout supabase={supabase}>
+        <section className="flex flex-col items-center justify-center gap-4 py-8 md:py-10">
+          {stations ?
+            <>
+              <h1 className="text-3xl text-default-600">{t('title')}</h1>
+              <Divider />
 
-            {stations.map((station: any) => (
-              <Card
-                key={station.home_id}
-                isHoverable
-                isPressable
-                className="w-full sm:w-2/5 mx-auto bg-slate-200 dark:bg-slate-700"
-                onPress={() => {
-                  navigate(routes.device.replace(":id", station.home_id));
-                }}
-              >
-                <CardHeader className="text-3xl text-default-600">
-                  <h1 className="text-3xl text-default-600 text-bold">
-                    {station.station_name} ({station.place.street},{" "}
-                    {station.place.city})
-                  </h1>
-                </CardHeader>
-                <CardBody>
-                  <p className="text-lg text-default-600 text-semibold">
-                    Enheter:
-                  </p>
-                  {station.modules.map((module: any) => {
-                    return (
-                      <p
-                        key={module.module_name}
-                        className="text-sm text-default-600"
-                      >
-                        {module.module_name}
-                      </p>
-                    );
-                  })}
-                </CardBody>
-              </Card>
-            ))}</> : <Spinner color="secondary" />}
-      </section>
-    </DefaultLayout>
+              {stations.map((station: any) => (
+                <Card
+                  key={station.home_id}
+                  isHoverable
+                  isPressable
+                  className="w-full sm:w-2/5 mx-auto bg-slate-200 dark:bg-slate-700"
+                  onPress={() => {
+                    navigate(routes.device.replace(":id", station.home_id));
+                  }}
+                >
+                  <CardHeader className="text-3xl text-default-600">
+                    <h1 className="text-3xl text-default-600 text-bold">
+                      {station.station_name} ({station.place.street},{" "}
+                      {station.place.city})
+                    </h1>
+                  </CardHeader>
+                  <CardBody>
+                    <p className="text-lg text-default-600 text-semibold">
+                      {t('devices')}
+                    </p>
+                    {station.modules.map((module: any) => {
+                      return (
+                        <p
+                          key={module.module_name}
+                          className="text-sm text-default-600"
+                        >
+                          {module.module_name}
+                        </p>
+                      );
+                    })}
+                  </CardBody>
+                </Card>
+              ))}</> : <Spinner color="secondary" />}
+        </section>
+      </DefaultLayout>
+    </Suspense>
   );
 }

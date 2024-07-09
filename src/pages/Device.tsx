@@ -11,7 +11,7 @@ import {
     getKeyValue,
     useDisclosure,
 } from "@nextui-org/react";
-import { useEffect, useMemo, useState } from "react";
+import { Suspense, useEffect, useMemo, useState } from "react";
 import { useSelector } from "react-redux";
 import { useNavigate, useParams } from "react-router-dom";
 import { v4 as uuidv4 } from "uuid";
@@ -23,6 +23,7 @@ import { getNetatmoUserData, netatmo_base_url, rainTableHeaders, routes } from "
 import RainFilter from "@/components/RainFilter";
 import Graph from "@/components/Graph";
 import FilterModal from "@/components/FilterModal";
+import { useTranslation } from "react-i18next";
 
 export default function Device({ supabase }: { supabase: SupabaseClient }) {
     const { id } = useParams();
@@ -61,6 +62,7 @@ export default function Device({ supabase }: { supabase: SupabaseClient }) {
     const { isOpen, onOpen, onOpenChange } = useDisclosure();
 
     const navigate = useNavigate();
+    const { t } = useTranslation('device');
 
     useEffect(() => {
         function fetchNetatmoData(date_begin: number = 0) {
@@ -128,7 +130,7 @@ export default function Device({ supabase }: { supabase: SupabaseClient }) {
             });
         }
 
-        document.title = "RainMemo - Device";
+        document.title = t('deviceTitle', { name: station.station_name });
 
         if (!hasAllData) {
             fetchNetatmoData(lastFetchedDate);
@@ -181,214 +183,215 @@ export default function Device({ supabase }: { supabase: SupabaseClient }) {
     }
 
     return (
-        <DefaultLayout supabase={supabase}>
-            <section className="flex flex-col items-center justify-center gap-4 py-8 md:py-10">
-                {hasAllData ? (
-                    <>
-                        <FilterModal
-                            handleFilter={(fromDate: Date, toDate: Date) => {//TODO: må filtrere hendelser også
-                                const fromData = allNetatmoData.findIndex(
-                                    (d: any) => d.date - 43200 === fromDate.getTime() / 1000,
-                                );
-                                const toData = allNetatmoData.findIndex(
-                                    (d: any) => d.date - 43200 === toDate.getTime() / 1000,
-                                );
+        <Suspense fallback={<Spinner />}>
+            <DefaultLayout supabase={supabase}>
+                <section className="flex flex-col items-center justify-center gap-4 py-8 md:py-10">
+                    {hasAllData ? (
+                        <>
+                            <FilterModal
+                                handleFilter={(fromDate: Date, toDate: Date) => {
+                                    const fromData = allNetatmoData.findIndex(
+                                        (d: any) => d.date - 43200 === fromDate.getTime() / 1000,
+                                    );
+                                    const toData = allNetatmoData.findIndex(
+                                        (d: any) => d.date - 43200 === toDate.getTime() / 1000,
+                                    );
 
-                                if (fromData === -1 || toData === -1) {
+                                    if (fromData === -1 || toData === -1) {
+                                        setDataFormatted(
+                                            allNetatmoData
+                                                .filter((d: any) => d.amount > 0)
+                                                .map((d: any) => ({
+                                                    key: d.key as string,
+                                                    date: new Date(d.date * 1000)
+                                                        .toISOString()
+                                                        .split("T")[0],
+                                                    amount: d.amount,
+                                                })),
+                                        );
+
+                                        return;
+                                    }
+
                                     setDataFormatted(
                                         allNetatmoData
+                                            .slice(fromData, toData + 1)
                                             .filter((d: any) => d.amount > 0)
                                             .map((d: any) => ({
-                                                key: d.key as string,
-                                                date: new Date(d.date * 1000)
-                                                    .toISOString()
-                                                    .split("T")[0],
+                                                key: d.key,
+                                                date: new Date(d.date * 1000).toISOString().split("T")[0],
                                                 amount: d.amount,
                                             })),
                                     );
+                                    setUserEvents((prevEvents) => prevEvents.filter((d: any) => d.event_date >= fromDate.toISOString().split('T')[0] && d.event_date <= toDate.toISOString().split('T')[0]));
+                                }}
+                                setFiltered={(isFiltered) => {
+                                    setIsFiltered(isFiltered);
+                                }}
+                                isOpen={isOpen}
+                                maxDate={fromDate(
+                                    new Date(allNetatmoData[allNetatmoData.length - 1].date.valueOf() * 1000),
+                                    "Europe/Oslo",
+                                )}
+                                minDate={fromDate(new Date(allNetatmoData[0].date.valueOf() * 1000), "Europe/Oslo")}
+                                onOpenChange={onOpenChange}
+                            />
+                            {
+                                dataFormatted.length > 0 ? <Graph data={mergeEvents(userEvents, dataFormatted).sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())} /> :
+                                    <h1 className="text-3xl text-default-600 text-bold">{t('noData')}</h1>
+                            }
+                            <Divider />
+                            <Button onClick={() => {
+                                navigate(routes.events.replace(":id", station.home_id));
+                            }}>{t('seeEventsButton')}</Button>
+                            {isFiltered && userEvents.length > 0 &&
+                                <div className="shadow-lg dark:bg-default/30 rounded-lg p-4">
+                                    <h1 className="text-xl text-default-900">
+                                        {t('events')}
 
-                                    return;
+                                    </h1>
+                                    <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
+                                        {
+                                            userEvents.map((e) => (
+                                                <div key={e.id} className="shadow-md dark:bg-default/30 rounded-md p-4 mb-4 mt-4">
+                                                    <p>{e.event_text}</p>
+                                                    <p>{e.event_date}</p>
+                                                </div>
+                                            ))
+                                        }
+                                    </div>
+                                </div>
+                            }
+                            <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
+
+                                {
+                                    dataFormatted.length > 0 &&
+                                    <>
+                                        <div className="shadow-lg dark:bg-default/30 rounded-lg p-4">
+                                            <h1 className="text-xl text-default-900">
+                                                {t('totalRain')}
+                                            </h1>
+                                            <h2 className="text-md text-default-600">
+                                                {dataFormatted
+                                                    .reduce((a: any, b: any) => a + b.amount, 0)
+                                                    .toFixed(2)}{" "}
+                                                mm
+                                            </h2>
+                                        </div>
+                                        <div className="shadow-lg dark:bg-default/30 rounded-lg p-4">
+                                            <h1 className="text-xl text-default-900">
+                                                {t('numberOfRainDays')}
+                                            </h1>
+                                            <h2 className="text-md text-default-600">
+                                                {dataFormatted.length}
+                                            </h2>
+                                        </div>
+
+                                        <div className="shadow-lg dark:bg-default/30 rounded-lg p-4">
+                                            <h1 className="text-xl text-default-900">
+                                                {t('wettestDay')}
+                                            </h1>
+                                            <h2 className="text-md text-default-600">
+                                                {
+                                                    new Date(dataFormatted.reduce((a: any, b: any) =>
+                                                        a.amount > b.amount ? a : b,
+                                                    ).date).toDateString()
+                                                }
+                                                (
+                                                {
+                                                    dataFormatted.reduce((a: any, b: any) =>
+                                                        a.amount > b.amount ? a : b,
+                                                    ).amount
+                                                }{" "}
+                                                mm)
+                                            </h2>
+                                        </div>
+                                        <div className="shadow-lg dark:bg-default/30 rounded-lg p-4">
+                                            <h1 className="text-xl text-default-900">
+                                                {t('driestDay')}
+                                            </h1>
+                                            <h2 className="text-md text-default-600">
+                                                {
+                                                    new Date(dataFormatted.reduce((a: any, b: any) =>
+                                                        a.amount < b.amount ? a : b,
+                                                    ).date).toDateString()
+                                                }
+                                                (
+                                                {
+                                                    dataFormatted.reduce((a: any, b: any) =>
+                                                        a.amount < b.amount ? a : b,
+                                                    ).amount
+                                                }{" "}
+                                                mm)
+                                            </h2>
+                                        </div>
+
+                                        <div className="shadow-lg dark:bg-default/30 rounded-lg p-4">
+                                            <h1 className="text-xl text-default-900">
+                                                {t('avgRainDays')}
+                                            </h1>
+                                            <h2 className="text-md text-default-600 py-4">
+                                                {
+                                                    t('days', {
+                                                        days: (getNumberOfDaysSinceStart(new Date(dataFormatted[0].date), new Date(dataFormatted[dataFormatted.length - 1].date)) / dataFormatted.length).toFixed(0)
+                                                    })
+                                                }
+                                            </h2>
+                                            {
+                                                //om vi er før tidspunktet for gjetningen av neste regndag så print gjetningen
+                                                addDays(new Date(dataFormatted[dataFormatted.length - 1].date),
+                                                    Math.round(getNumberOfDaysSinceStart(new Date(dataFormatted[0].date), new Date(dataFormatted[dataFormatted.length - 1].date)) / dataFormatted.length)).getTime() > Date.now() &&
+                                                <h2 className="text-md text-default-600">
+                                                    {
+                                                        t('nextRainDayText', { nextRainDate: addDays(new Date(dataFormatted[dataFormatted.length - 1].date), Math.round(getNumberOfDaysSinceStart(new Date(dataFormatted[0].date.toLocaleLowerCase()), new Date(dataFormatted[dataFormatted.length - 1].date)) / dataFormatted.length)).toDateString() })
+                                                    }
+                                                </h2>}
+                                        </div>
+                                    </>
                                 }
 
-                                setDataFormatted(
-                                    allNetatmoData
-                                        .slice(fromData, toData + 1)
-                                        .filter((d: any) => d.amount > 0)
-                                        .map((d: any) => ({
-                                            key: d.key,
-                                            date: new Date(d.date * 1000).toISOString().split("T")[0],
-                                            amount: d.amount,
-                                        })),
-                                );
-                                setUserEvents((prevEvents) => prevEvents.filter((d: any) => d.event_date >= fromDate.toISOString().split('T')[0] && d.event_date <= toDate.toISOString().split('T')[0]));
-                            }}
-                            setFiltered={(isFiltered) => {
-                                setIsFiltered(isFiltered);
-                            }}
-                            isOpen={isOpen}
-                            maxDate={fromDate(
-                                new Date(allNetatmoData[allNetatmoData.length - 1].date.valueOf() * 1000),
-                                "Europe/Oslo",
-                            )}
-                            minDate={fromDate(new Date(allNetatmoData[0].date.valueOf() * 1000), "Europe/Oslo")}
-                            onOpenChange={onOpenChange}
-                        />
-                        {
-                            dataFormatted.length > 0 ? <Graph data={mergeEvents(userEvents, dataFormatted).sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())} /> :
-                                <h1 className="text-3xl text-default-600 text-bold">Ingen regndata for valgt periode</h1>
-                        }
-                        <Divider />
-                        <Button onClick={() => {
-                            navigate(routes.events.replace(":id", station.home_id));
-                        }}>Se alle hendelser</Button>
-                        { isFiltered && userEvents.length > 0 &&
-                            <div className="shadow-lg dark:bg-default/30 rounded-lg p-4">
-                                <h1 className="text-xl text-default-900">
-                                    Hendelser i valgt periode:
-
-                                </h1>
-                                <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
-                                    {
-                                        userEvents.map((e) => (
-                                            <div key={e.id} className="shadow-md dark:bg-default/30 rounded-md p-4 mb-4 mt-4">
-                                                <p>{e.event_text}</p>
-                                                <p>{e.event_date}</p>
-                                            </div>
-                                        ))
-                                    }
-                                </div>
                             </div>
-                        }
-                        <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
-
-                            {
-                                dataFormatted.length > 0 &&
-                                <>
-                                    <div className="shadow-lg dark:bg-default/30 rounded-lg p-4">
-                                        <h1 className="text-xl text-default-900">
-                                            Total nedbør:
-                                        </h1>
-                                        <h2 className="text-md text-default-600">
-                                            {dataFormatted
-                                                .reduce((a: any, b: any) => a + b.amount, 0)
-                                                .toFixed(2)}{" "}
-                                            mm
-                                        </h2>
-                                    </div>
-                                    <div className="shadow-lg dark:bg-default/30 rounded-lg p-4">
-                                        <h1 className="text-xl text-default-900">
-                                            Antall regndager:
-                                        </h1>
-                                        <h2 className="text-md text-default-600">
-                                            {dataFormatted.length}
-                                        </h2>
-                                    </div>
-
-                                    <div className="shadow-lg dark:bg-default/30 rounded-lg p-4">
-                                        <h1 className="text-xl text-default-900">
-                                            Dagen med mest regn:
-                                        </h1>
-                                        <h2 className="text-md text-default-600">
-                                            {
-                                                dataFormatted.reduce((a: any, b: any) =>
-                                                    a.amount > b.amount ? a : b,
-                                                ).date + " "
-                                            }
-                                            (
-                                            {
-                                                dataFormatted.reduce((a: any, b: any) =>
-                                                    a.amount > b.amount ? a : b,
-                                                ).amount
-                                            }{" "}
-                                            mm)
-                                        </h2>
-                                    </div>
-                                    <div className="shadow-lg dark:bg-default/30 rounded-lg p-4">
-                                        <h1 className="text-xl text-default-900">
-                                            Dagen med minst regn:
-                                        </h1>
-                                        <h2 className="text-md text-default-600">
-                                            {
-                                                dataFormatted.reduce((a: any, b: any) =>
-                                                    a.amount < b.amount ? a : b,
-                                                ).date + " "
-                                            }
-                                            (
-                                            {
-                                                dataFormatted.reduce((a: any, b: any) =>
-                                                    a.amount < b.amount ? a : b,
-                                                ).amount
-                                            }{" "}
-                                            mm)
-                                        </h2>
-                                    </div>
-
-                                    <div className="shadow-lg dark:bg-default/30 rounded-lg p-4">
-                                        <h1 className="text-xl text-default-900">
-                                            Antall dager i snitt mellom hver regndag:
-                                        </h1>
-                                        <h2 className="text-md text-default-600 py-4">
-                                            {
-                                                (getNumberOfDaysSinceStart(new Date(dataFormatted[0].date), new Date(dataFormatted[dataFormatted.length - 1].date)) / dataFormatted.length).toFixed(0) + " dager"
-                                            }
-                                        </h2>
-                                        {
-                                            //om vi er før tidspunktet for gjetningen av neste regndag så print gjetningen
-                                            addDays(new Date(dataFormatted[dataFormatted.length - 1].date),
-                                                Math.round(getNumberOfDaysSinceStart(new Date(dataFormatted[0].date), new Date(dataFormatted[dataFormatted.length - 1].date)) / dataFormatted.length)).getTime() > Date.now() &&
-                                            <h2 className="text-md text-default-600">
-                                                Kan dermed forvente regn
-                                                {
-                                                    " " + addDays(new Date(dataFormatted[dataFormatted.length - 1].date),
-                                                        Math.round(getNumberOfDaysSinceStart(new Date(dataFormatted[0].date), new Date(dataFormatted[dataFormatted.length - 1].date)) / dataFormatted.length)).toLocaleDateString("nb-NO") + " "
-                                                }
-                                                neste gang.
-                                            </h2>}
-                                    </div>
-                                </>
-                            }
-
-                        </div>
-                        <RainFilter handleClick={onOpen} />
-                        <Table
-                            isStriped
-                            selectionMode="none"
-                            // @ts-ignore
-                            sortDescriptor={sortDescriptor}
-                            // @ts-ignore
-                            onSortChange={setSortDescriptor}
-                        >
-                            <TableHeader columns={rainTableHeaders(false)}>
-                                {(column) => (
-                                    <TableColumn key={column.key} allowsSorting>
-                                        {column.label}
-                                    </TableColumn>
-                                )}
-                            </TableHeader>
-                            <TableBody items={sortedItems}>
-                                {(item: any) => (
-                                    <TableRow
-                                        key={item.key}
-                                        onClick={() => {
-                                            navigate(
-                                                routes.day
-                                                    .replace(":id", station.home_id)
-                                                    .replace(":date", item.date),
-                                            );
-                                        }}
-                                    >
-                                        {(columnKey) => (
-                                            <TableCell>{getKeyValue(item, columnKey)}</TableCell>
-                                        )}
-                                    </TableRow>
-                                )}
-                            </TableBody>
-                        </Table>
-                    </>
-                ) : (
-                    <Spinner color="secondary" />
-                )}
-            </section>
-        </DefaultLayout>
+                            <RainFilter handleClick={onOpen} />
+                            <Table
+                                isStriped
+                                selectionMode="none"
+                                // @ts-ignore
+                                sortDescriptor={sortDescriptor}
+                                // @ts-ignore
+                                onSortChange={setSortDescriptor}
+                            >
+                                <TableHeader columns={rainTableHeaders(false)}>
+                                    {(column) => (
+                                        <TableColumn key={column.key} allowsSorting>
+                                            {column.label}
+                                        </TableColumn>
+                                    )}
+                                </TableHeader>
+                                <TableBody items={sortedItems}>
+                                    {(item: any) => (
+                                        <TableRow
+                                            key={item.key}
+                                            onClick={() => {
+                                                navigate(
+                                                    routes.day
+                                                        .replace(":id", station.home_id)
+                                                        .replace(":date", item.date),
+                                                );
+                                            }}
+                                        >
+                                            {(columnKey) => (
+                                                <TableCell>{getKeyValue(item, columnKey)}</TableCell>
+                                            )}
+                                        </TableRow>
+                                    )}
+                                </TableBody>
+                            </Table>
+                        </>
+                    ) : (
+                        <Spinner color="secondary" />
+                    )}
+                </section>
+            </DefaultLayout>
+        </Suspense>
     );
 }

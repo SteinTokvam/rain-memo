@@ -9,12 +9,12 @@ import { Analytics } from "@vercel/analytics/react";
 import './i18n';
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
-  <React.StrictMode>
+
     <BrowserRouter>
       <Provider>
         <Analytics />
         <App />
       </Provider>
     </BrowserRouter>
-  </React.StrictMode>,
+
 );

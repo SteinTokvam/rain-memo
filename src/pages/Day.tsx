@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { useNavigate, useParams } from "react-router-dom";
 import { v4 as uuidv4 } from "uuid";
@@ -18,6 +18,7 @@ import { SupabaseClient } from "@supabase/supabase-js";
 import { getNetatmoUserData, netatmo_base_url, rainTableHeaders, routes } from "@/global";
 import Graph from "@/components/Graph";
 import DefaultLayout from "@/layouts/default";
+import { useTranslation } from "react-i18next";
 
 export default function Day({ supabase }: { supabase: SupabaseClient }) {
     const { id, date } = useParams();
@@ -26,6 +27,7 @@ export default function Day({ supabase }: { supabase: SupabaseClient }) {
     ).filter((s: any) => s.home_id === id)[0];
     const [dataFormatted, setDataFormatted] = useState<{ key: string; date: string; amount: number }[]>([]);
     const navigate = useNavigate();
+    const { t } = useTranslation('day');
 
     useEffect(() => {
         getNetatmoUserData(supabase).then((res) => {
@@ -82,37 +84,39 @@ export default function Day({ supabase }: { supabase: SupabaseClient }) {
     }, []);
 
     return (
-        <DefaultLayout supabase={supabase}>
-            <section className="flex flex-col items-center justify-center gap-4 py-8 md:py-10">
-                {dataFormatted.length > 0 ? (
-                    <>
-                        <Graph data={dataFormatted} />
-                        <Divider />
-                        <div className="shadow-lg dark:bg-default/30 rounded-lg p-4">
-                            <h1 className="text-3xl text-default-600 text-bold">Totalt i dag:</h1>
-                            <h2 className="text-lg text-default-600 text-semibold">{dataFormatted.reduce((a: any, b: any) => a + b.amount, 0).toFixed(2)}mm</h2>
-                        </div>
-                        <Table isStriped>
-                            <TableHeader columns={rainTableHeaders(true)}>
-                                {(column) => (
-                                    <TableColumn key={column.key}>{column.label}</TableColumn>
-                                )}
-                            </TableHeader>
-                            <TableBody items={dataFormatted}>
-                                {(item: any) => (
-                                    <TableRow key={item.key}>
-                                        {(columnKey) => (
-                                            <TableCell>{getKeyValue(item, columnKey)}</TableCell>
-                                        )}
-                                    </TableRow>
-                                )}
-                            </TableBody>
-                        </Table>
-                    </>
-                ) : (
-                    <Spinner color="secondary" />
-                )}
-            </section>
-        </DefaultLayout>
+        <Suspense fallback={<Spinner />}>
+            <DefaultLayout supabase={supabase}>
+                <section className="flex flex-col items-center justify-center gap-4 py-8 md:py-10">
+                    {dataFormatted.length > 0 ? (
+                        <>
+                            <Graph data={dataFormatted} />
+                            <Divider />
+                            <div className="shadow-lg dark:bg-default/30 rounded-lg p-4">
+                                <h1 className="text-3xl text-default-600 text-bold">{t('header')}</h1>
+                                <h2 className="text-lg text-default-600 text-semibold">{dataFormatted.reduce((a: any, b: any) => a + b.amount, 0).toFixed(2)}mm</h2>
+                            </div>
+                            <Table isStriped>
+                                <TableHeader columns={rainTableHeaders(true)}>
+                                    {(column) => (
+                                        <TableColumn key={column.key}>{column.label}</TableColumn>
+                                    )}
+                                </TableHeader>
+                                <TableBody items={dataFormatted}>
+                                    {(item: any) => (
+                                        <TableRow key={item.key}>
+                                            {(columnKey) => (
+                                                <TableCell>{getKeyValue(item, columnKey)}</TableCell>
+                                            )}
+                                        </TableRow>
+                                    )}
+                                </TableBody>
+                            </Table>
+                        </>
+                    ) : (
+                        <Spinner color="secondary" />
+                    )}
+                </section>
+            </DefaultLayout>
+        </Suspense>
     );
 }

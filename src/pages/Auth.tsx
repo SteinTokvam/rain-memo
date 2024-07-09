@@ -1,6 +1,6 @@
 import { useState, useEffect, ReactNode, Suspense } from "react";
 import { Session, SupabaseClient } from "@supabase/supabase-js";
-import { Button, Input } from "@nextui-org/react";
+import { Button, Input, Spinner } from "@nextui-org/react";
 import { Link, useNavigate } from "react-router-dom";
 
 import { routes, styles } from "@/global";
@@ -20,7 +20,7 @@ export default function Auth({
   const [error, setError] = useState(false);
   const [isSignUp, setIsSignUp] = useState(false);
   const navigate = useNavigate();
-  const { t } = useTranslation(['translation', 'auth']);
+  const { t } = useTranslation(['auth', 'translation']);
 
   useEffect(() => {
     if (!supabase) {
@@ -74,11 +74,11 @@ export default function Auth({
 
   if (!session) {
     return (
-      <Suspense fallback={null}>
+      <Suspense fallback={<Spinner />}>
         <div className="w-2/3 sm:w-1/3 mx-auto space-y-2 grid grid-cols-1 mt-10">
           <div className="flex justify-center">
             <Logo />
-            <p className="font-bold text-inherit p-3">{t('appName')}</p>
+            <p className="font-bold text-inherit p-3">{t('appName', { ns: 'translation' })}</p>
           </div>
           {error && <p className="text-red-500">{t('wrongAuth')}</p>}
           <Input
