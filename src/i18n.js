@@ -14,7 +14,10 @@ i18n
   .use(Backend)
   // detect user language
   // learn more: https://github.com/i18next/i18next-browser-languageDetector
-  .use(LanguageDetector)
+  .use(LanguageDetector).init({
+    supportedLngs: ['en', 'no'],
+    ...i18nextOptions
+  })
   // pass the i18n instance to react-i18next.
   .use(initReactI18next)
   // init i18next
