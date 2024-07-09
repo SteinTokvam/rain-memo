@@ -1,0 +1,25 @@
+{
+    "hero": {
+        "title": "Klar til å spore regnværet?",
+        "text": "Opplev nøyaktige og pålitelige nedbørsdata direkte fra Netatmo sin regnmåler. Appen gir deg sanntidsinformasjon om regnværet, slik at du alltid er forberedt på værforandringer. Enten du planlegger hagearbeid, utendørsaktiviteter, eller bare vil holde øye med været, vil appen hjelpe deg med å ta bedre beslutninger.",
+        "button": "Kom i gang"
+    },
+    "features": {
+        "stats": {
+            "header": "Statistikk",
+            "text": "Få en oversikt over hver regnfulle dag, og klikk på en dag for å se når det regnet den dagen!"
+        },
+        "graphs": {
+            "header": "Graf",
+            "text": "Visualiser nedbørsmengdene i en enkelt graf. Støtter visning av grafen for alle regnfulle dager, men også for en enkelt dag."
+        },
+        "filter": {
+            "header": "Filter",
+            "text": "Bruk filtreringsalternativene for å vise data bare for gjeldende måned, forrige måned, eller forrige uke. Du kan også velge spesifikke datoer for å vise data for."
+        },
+        "events": {
+            "header": "Hendelser",
+            "text": "Skjedde det noe spesielt en dag? For eksempel, er du nysgjerrig på hvor mye det har regnet siden du plantet blomstene dine? Legg til en hendelse for det, og det vil vises på grafen."
+        }
+    }
+}

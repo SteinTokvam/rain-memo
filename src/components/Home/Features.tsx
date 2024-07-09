@@ -1,24 +1,26 @@
 
+import { useTranslation } from 'react-i18next';
 
 export default function Features() {
+    const { t } = useTranslation(['landing']);
     return (
         <div className="grid gitd-cols-1 gap-4 p-4 sm:grid-cols-2 md:grid-cols-3 bg-default-100">
             <div className="">
-                <h2 className="text-3xl font-bold">Statistikk</h2>
-                <p>Få oversikt over hver eneste regndag, og trykk deg inn på en dag for å se når den dagen det regnet!</p>
+                <h2 className="text-3xl font-bold">{t('features.stats.header')}</h2>
+                <p>{t('features.stats.text')}</p>
             </div>
             <div className="">
-                <h2 className="text-3xl font-bold">Grafer</h2>
-                <p>Visualiser regnmengdene i en enkelt graf. Støtter visning av graf for alle regndager, men også for en enkelt dag.</p>
+                <h2 className="text-3xl font-bold">{t('features.graphs.header')}</h2>
+                <p>{t('features.graphs.text')}</p>
             </div>
             <div className="">
-                <h2 className="text-3xl font-bold">Filtrering</h2>
-                <p>Filtrer oversikten til å vise data for bare den inneværende måneden, forrige måned eller forrige uke. Du kan også velge å egne datoer å vise data for.</p>
+                <h2 className="text-3xl font-bold">{t('features.filter.header')}</h2>
+                <p>{t('features.filter.text')}</p>
             </div>
 
             <div className="">
-                <h2 className="text-3xl font-bold">Hendelser</h2>
-                <p>Skjedde det noe spesielt en dag i forhold til regnværet? Lurer du for eksempel på hvor mye det har regnet siden du plantet i blomsterbedet? Legg inn en hendelse for det, så kommer den opp i grafen.</p>
+                <h2 className="text-3xl font-bold">{t('features.events.header')}</h2>
+                <p>{t('features.events.text')}</p>
             </div>
         </div>
     );

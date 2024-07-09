@@ -6,6 +6,7 @@ import App from "./App.tsx";
 import { Provider } from "./provider.tsx";
 import "@/styles/globals.css";
 import { Analytics } from "@vercel/analytics/react";
+import './i18n';
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
