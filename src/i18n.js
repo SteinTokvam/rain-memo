@@ -20,8 +20,9 @@ i18n
   // init i18next
   // for all options read: https://www.i18next.com/overview/configuration-options
   .init({
-    supportedLngs: ['en', 'no'],
-    fallbackLng: 'en',
+    supportedLngs: ['gb', 'no'],
+    order: ['querystring', 'cookie', 'localStorage', 'sessionStorage', 'navigator', 'htmlTag', 'path', 'subdomain'],
+    fallbackLng: 'gb',
     debug: true,
 
     interpolation: {
