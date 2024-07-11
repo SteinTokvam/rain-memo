@@ -21,7 +21,8 @@ export const Navbar = ({ supabase }: { supabase: SupabaseClient | null }) => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const session = localStorage.getItem("sb-dezjrltoowqjcqiaqaog-auth-token");
-  const [selectedLanguageLabel, setSelectedLanguageLabel] = useState(new Set(['gb']));
+  const lang = localStorage.getItem("i18nextLng") !== undefined ? localStorage.getItem("i18nextLng") : "gb";
+  const [selectedLanguageLabel, setSelectedLanguageLabel] = useState(new Set([lang]));
   const languages = ["gb", "no"];
   const { i18n } = useTranslation();
 
