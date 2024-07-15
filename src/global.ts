@@ -52,7 +52,7 @@ export const styles = {
   },
 };
 
-export const netatmo_base_url = 'https://api.netatmo.com';
+export const netatmo_base_url = "https://api.netatmo.com";
 
 export async function getNetatmoClientIdAndSecret(
   supabase: SupabaseClient,
@@ -80,7 +80,6 @@ async function updateNetatmoInfo(
   data: { access_token: string; refresh_token: string; expires_in: number },
   supabase: SupabaseClient,
 ) {
-
   return await supabase
     .from("netatmo_user_info")
     .update({
