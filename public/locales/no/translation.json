@@ -1,3 +1,13 @@
 {
-    "appName": "Rain Memo"
+    "appName": "Rain Memo",
+    "filter": "Filtrer",
+    "resetFilter": "Reset filter",
+    "thisMonth": "Denne måneden",
+    "lastMonth": "Forrige måned",
+    "thisYear": "I år",
+    "oAuthRedirecting": "Navigerer til Netatmo for autentisering...",
+    "netatmoRedirecting": "Laster...",
+    "rain": "Nedbør: {{rain}} mm",
+    "event": "Hendelse: {{event}}",
+    "close": "Lukk"
 }

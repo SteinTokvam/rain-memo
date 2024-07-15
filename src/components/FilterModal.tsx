@@ -16,6 +16,7 @@ import {
   startOfMonth,
   endOfMonth,
 } from "@internationalized/date";
+import { useTranslation } from "react-i18next";
 
 export default function FilterModal({
   isOpen,
@@ -32,35 +33,33 @@ export default function FilterModal({
   handleFilter: (minDate: Date, maxDate: Date) => void;
   setFiltered: (isFiltered: boolean) => void
 }) {
-  let [value, setValue] = useState({
+  const [value, setValue] = useState({
     start: startOfMonth(today(getLocalTimeZone())),
     end: today(getLocalTimeZone()),
   });
-
-  let now = today(getLocalTimeZone());
-
-  let thisYear = {
+  const now = today(getLocalTimeZone());
+  const thisYear = {
     start: startOfMonth(now.subtract({ months: now.month - 1 })),
     end: now,
   };
-
-  let lastMonth = {
+  const lastMonth = {
     start: startOfMonth(now.subtract({ months: 1 })),
     end: endOfMonth(now.subtract({ months: 1 })),
   };
-
-  let [focusedValue, setFocusedValue] = useState(today(getLocalTimeZone()));
-
-  let thisMonth = { start: startOfMonth(now), end: now };
+  const [focusedValue, setFocusedValue] = useState(today(getLocalTimeZone()));
+  const thisMonth = { start: startOfMonth(now), end: now };
+  const { t } = useTranslation();
 
   return (
-    <Modal isOpen={isOpen} onOpenChange={onOpenChange}>
+    <Modal size={window.screen.width > window.screen.height ? "4xl" : "md"} isOpen={isOpen} onOpenChange={onOpenChange}>
       <ModalContent>
         {(onClose) => (
           <>
             <ModalHeader className="flex flex-col gap-1">Filtrer</ModalHeader>
             <ModalBody>
               <RangeCalendar
+                visibleMonths={window.screen.width > window.screen.height ? 3 : 1}
+                pageBehavior="single"
                 aria-label="Dato filter"
                 focusedValue={focusedValue}
                 maxValue={maxDate}
@@ -85,7 +84,7 @@ export default function FilterModal({
                         setFocusedValue(thisYear.end);
                       }}
                     >
-                      I år
+                      {t('thisYear')}
                     </Button>
                     <Button
                       onPress={() => {
@@ -93,7 +92,7 @@ export default function FilterModal({
                         setFocusedValue(lastMonth.end);
                       }}
                     >
-                      Forrige måned
+                      {t('lastMonth')}
                     </Button>
                     <Button
                       onPress={() => {
@@ -101,7 +100,7 @@ export default function FilterModal({
                         setFocusedValue(thisMonth.start);
                       }}
                     >
-                      Denne måneden
+                      {t('thisMonth')}
                     </Button>
                   </ButtonGroup>
                 }
@@ -116,12 +115,12 @@ export default function FilterModal({
                   onClose();
                 }}
               >
-                Reset filter
+                {t('resetFilter')}
               </Button>
             </ModalBody>
             <ModalFooter>
               <Button color="danger" variant="light" onPress={onClose}>
-                Lukk
+                {t('close')}
               </Button>
               <Button
                 color="primary"
@@ -134,7 +133,7 @@ export default function FilterModal({
                   setFiltered(true);
                 }}
               >
-                Filtrer
+                {t('filter')}
               </Button>
             </ModalFooter>
           </>
