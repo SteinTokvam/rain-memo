@@ -72,6 +72,7 @@ export const Navbar = ({ supabase }: { supabase: SupabaseClient | null }) => {
         }}
         // @ts-ignore
         onSelectionChange={setSelectedLanguageLabel}
+        // @ts-ignore
         selectedKeys={selectedLanguageLabel}
         selectorIcon={<></>}
         renderValue={(items) => {
