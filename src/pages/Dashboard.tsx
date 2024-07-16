@@ -55,7 +55,7 @@ export default function Dashboard({ supabase }: { supabase: SupabaseClient }) {
         .catch(error => console.error(error));
     });
     document.title = "RainMemo - Dashboard";
-  }, []);
+  }, [stations, navigate, dispatch, supabase]);
 
   return (
     <Suspense fallback={<Spinner />}>
