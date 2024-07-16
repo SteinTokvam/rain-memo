@@ -26,7 +26,7 @@ export default function Events({ supabase }: { supabase: SupabaseClient }) {
             .then((res: any) => {
                 setUserEvents(res.data);
             })
-    }, []);
+    }, [userEvents]);
 
     return (
         <Suspense fallback={<Spinner />}>

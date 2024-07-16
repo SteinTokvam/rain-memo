@@ -1,5 +1,6 @@
 {
     "appName": "Rain Memo",
+    "login": "Logg inn/Registrer deg",
     "filter": "Filtrer",
     "resetFilter": "Reset filter",
     "thisMonth": "Denne måneden",

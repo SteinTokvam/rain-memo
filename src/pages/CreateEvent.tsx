@@ -47,7 +47,7 @@ export default function CreateEvent({ supabase }: { supabase: SupabaseClient }) 
                     <p className="text-default-500 text-sm">
                         {t('chosenDate', { date: eventDate ? formatter.format(eventDate.toDate(getLocalTimeZone())) : "--" })}
                     </p>
-                    <Button color="primary" onClick={async () => {
+                    <Button aria-label="add event" color="primary" onClick={async () => {
                         const { error } = await supabase
                             .from("user_events")
                             .insert({
@@ -56,7 +56,7 @@ export default function CreateEvent({ supabase }: { supabase: SupabaseClient }) 
                                 device_id: station.home_id
                             }).select()
                         console.log(error)
-                        navigate(routes.device.replace(":id", station.home_id))
+                        navigate(routes.events.replace(":id", station.home_id))
                     }}>{t('addEvent')}</Button>
 
                 </div>

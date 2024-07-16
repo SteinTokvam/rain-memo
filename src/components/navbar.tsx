@@ -24,7 +24,7 @@ export const Navbar = ({ supabase }: { supabase: SupabaseClient | null }) => {
   const lang = localStorage.getItem("i18nextLng") !== undefined ? localStorage.getItem("i18nextLng") : "gb";
   const [selectedLanguageLabel, setSelectedLanguageLabel] = useState(new Set([lang]));
   const languages = ["gb", "no"];
-  const { i18n } = useTranslation();
+  const { t, i18n } = useTranslation();
 
   const selectedLanguage = useMemo(
     () => Array.from(selectedLanguageLabel).join(", ").replaceAll("_", " "),
@@ -114,12 +114,13 @@ export const Navbar = ({ supabase }: { supabase: SupabaseClient | null }) => {
         </NavbarItem>
         <NavbarItem className={"hidden sm:flex"}>
           <Button
+            aria-label="Login/Register"
             className={`${session ? "hidden " : ""}`}
             onClick={() => {
               navigate(routes.dashboard);
             }}
           >
-            Logg inn/Registrer deg
+            {t('login')}
           </Button>
           <Button
             className={`${!session ? "hidden " : ""}text-sm font-normal text-default-600 bg-default-100`}

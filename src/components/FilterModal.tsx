@@ -77,8 +77,10 @@ export default function FilterModal({
                     radius="full"
                     size="sm"
                     variant="bordered"
+                    aria-label="Dato filter"
                   >
                     <Button
+                      aria-label="This year"
                       onPress={() => {
                         setValue(thisYear);
                         setFocusedValue(thisYear.end);
@@ -87,6 +89,7 @@ export default function FilterModal({
                       {t('thisYear')}
                     </Button>
                     <Button
+                      aria-label="Last month"
                       onPress={() => {
                         setValue(lastMonth);
                         setFocusedValue(lastMonth.end);
@@ -95,6 +98,7 @@ export default function FilterModal({
                       {t('lastMonth')}
                     </Button>
                     <Button
+                      aria-label="This month"
                       onPress={() => {
                         setValue(thisMonth);
                         setFocusedValue(thisMonth.start);
@@ -109,6 +113,7 @@ export default function FilterModal({
                 onFocusChange={setFocusedValue}
               />
               <Button
+                aria-label="Reset filter"
                 onPress={() => {
                   handleFilter(new Date(1970, 0, 1), new Date(1970, 0, 1));
                   setFiltered(false);
@@ -119,7 +124,7 @@ export default function FilterModal({
               </Button>
             </ModalBody>
             <ModalFooter>
-              <Button color="danger" variant="light" onPress={onClose}>
+              <Button color="danger" variant="light" onPress={onClose} aria-label="Close">
                 {t('close')}
               </Button>
               <Button
