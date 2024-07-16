@@ -120,7 +120,7 @@ export const Navbar = ({ supabase }: { supabase: SupabaseClient | null }) => {
               navigate(routes.dashboard);
             }}
           >
-            {t('login')}
+            {t('loginSignUp')}
           </Button>
           <Button
             className={`${!session ? "hidden " : ""}text-sm font-normal text-default-600 bg-default-100`}
@@ -134,7 +134,7 @@ export const Navbar = ({ supabase }: { supabase: SupabaseClient | null }) => {
                 });
             }}
           >
-            Logg ut
+            {t('logout')}
           </Button>
         </NavbarItem>
       </NavbarContent>
@@ -166,7 +166,7 @@ export const Navbar = ({ supabase }: { supabase: SupabaseClient | null }) => {
                 });
             }}
           >
-            Logg ut
+            {t('logout')}
           </Button>
         </NavbarItem>
       </NavbarContent>

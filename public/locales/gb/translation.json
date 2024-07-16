@@ -1,6 +1,8 @@
 {
     "appName": "Rain Memo",
-    "login": "Log in/Sign up",
+    "loginSignUp": "Log in/Sign up",
+    "login": "Log in",
+    "logout": "Log out",
     "filter": "Filter",
     "resetFilter": "Reset filter",
     "thisMonth": "This month",
