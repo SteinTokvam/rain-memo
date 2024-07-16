@@ -1,0 +1,8 @@
+{
+    "event": "Hendelse",
+    "events": "Hendelser",
+    "dateText": "Dato for hendelse",
+    "chosenDate": "Valgt dato: {{date}}",
+    "addEvent": "Legg til hendelse",
+    "noEvents": "Ingen hendelser"
+}

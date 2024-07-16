@@ -1,0 +1,13 @@
+{
+    "deviceTitle": "RainMemo - {{name}}",
+    "noData": "Ingen data for valgt periode.",
+    "totalRain": "Total nedbør:",
+    "seeEventsButton": "Se alle hendelser",
+    "events": "Hendelser i valgt periode:",
+    "numberOfRainDays": "Antall regndager:",
+    "wettestDay": "Dagen med mest nedbør:",
+    "driestDay": "Dagen med minst nedbør:",
+    "avgRainDays": "Gjennomsnittlig antall dager mellom hver regndag:",
+    "days": "{{days}} dager",
+    "nextRainDayText": "Kan dermed forvente regn {{nextRainDate}} neste gang."
+}

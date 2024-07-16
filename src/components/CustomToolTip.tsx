@@ -1,5 +1,8 @@
+import { useTranslation } from "react-i18next";
+
 // @ts-ignore
 export default function CustomToolTip({ active, payload }) {
+    const { t } = useTranslation();
     if (active && payload && payload.length) {
         return (
             <>
@@ -10,11 +13,11 @@ export default function CustomToolTip({ active, payload }) {
                         </div>
 
                         <div>
-                            <p>Nedbør: {pld.payload.amount} mm</p>
+                            <p>{t('rain', { rain: pld.payload.amount })}</p>
                         </div>
                         {pld.payload.event_text &&
                             <div>
-                                <p>Hendelse: {pld.payload.event_text}</p>
+                                <p>{t('event', { event: pld.payload.event_text })}</p>
                             </div>
                         }
                     </div>

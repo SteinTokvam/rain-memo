@@ -13,6 +13,8 @@ import Dashboard from "@/pages/Dashboard";
 import ConfirmEmail from "./pages/ConfirmEmail";
 import CreateEvent from "./pages/CreateEvent";
 import Events from "./pages/Events";
+import { Suspense } from "react";
+import { Spinner } from "@nextui-org/react";
 
 function App() {
   const supabase = createClient(
@@ -21,65 +23,67 @@ function App() {
   );
 
   return (
-    <Routes>
-      <Route element={<Home supabase={supabase} />} path={routes.home} />
-      <Route
-        element={
+    <Suspense fallback={<Spinner />}>
+      <Routes>
+        <Route element={<Home supabase={supabase} />} path={routes.home} />
+        <Route
+          element={
+            <Auth supabase={supabase}>
+              <Dashboard supabase={supabase} />
+            </Auth>
+          }
+          path={routes.dashboard}
+        />
+        <Route
+          element={
+            <Auth supabase={supabase}>
+              <Device supabase={supabase} />
+            </Auth>
+          }
+          path={routes.device}
+        />
+        <Route element={
           <Auth supabase={supabase}>
-            <Dashboard supabase={supabase} />
+            <Events supabase={supabase} />
           </Auth>
         }
-        path={routes.dashboard}
-      />
-      <Route
-        element={
-          <Auth supabase={supabase}>
-            <Device supabase={supabase} />
-          </Auth>
-        }
-        path={routes.device}
-      />
-      <Route element={
-        <Auth supabase={supabase}>
-          <Events supabase={supabase} />
-        </Auth>
-      } 
-      path={routes.events}
-      />
-      <Route
-        element={
-          <Auth supabase={supabase}>
-            <CreateEvent supabase={supabase} />
-          </Auth>
-        }
-        path={routes.createEvent}
-      />
-      <Route
-        element={
-          <Auth supabase={supabase}>
-            <Day supabase={supabase} />
-          </Auth>
-        }
-        path={routes.day}
-      />
-      <Route
-        element={
-          <Auth supabase={supabase}>
-            <NetatmoOauth supabase={supabase} />
-          </Auth>
-        }
-        path={routes.netatmoOauth}
-      />
-      <Route
-        element={
-          <Auth supabase={supabase}>
-            <NetatmoRedirect supabase={supabase} />
-          </Auth>
-        }
-        path={routes.netatmoRedirect}
-      />
-      <Route element={<ConfirmEmail supabase={supabase} />} path={routes.confirmEmail} />
-    </Routes>
+          path={routes.events}
+        />
+        <Route
+          element={
+            <Auth supabase={supabase}>
+              <CreateEvent supabase={supabase} />
+            </Auth>
+          }
+          path={routes.createEvent}
+        />
+        <Route
+          element={
+            <Auth supabase={supabase}>
+              <Day supabase={supabase} />
+            </Auth>
+          }
+          path={routes.day}
+        />
+        <Route
+          element={
+            <Auth supabase={supabase}>
+              <NetatmoOauth supabase={supabase} />
+            </Auth>
+          }
+          path={routes.netatmoOauth}
+        />
+        <Route
+          element={
+            <Auth supabase={supabase}>
+              <NetatmoRedirect supabase={supabase} />
+            </Auth>
+          }
+          path={routes.netatmoRedirect}
+        />
+        <Route element={<ConfirmEmail supabase={supabase} />} path={routes.confirmEmail} />
+      </Routes>
+    </Suspense>
   );
 }
 

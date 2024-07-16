@@ -1,0 +1,13 @@
+{
+    "deviceTitle": "RainMemo - {{name}}",
+    "noData": "No data for chosen period.",
+    "totalRain": "Total rain:",
+    "seeEventsButton": "See all events",
+    "events": "Events in chosen period:",
+    "numberOfRainDays": "Number of days with rain:",
+    "wettestDay": "Day with the most rain:",
+    "driestDay": "Day with the least rain:",
+    "avgRainDays": "Days in average between rainy days:",
+    "days": "{{days}} days",
+    "nextRainDayText": "May expect rain on {{nextRainDate}} next."
+}

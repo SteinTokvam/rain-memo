@@ -1,0 +1,25 @@
+{
+    "hero": {
+        "title": "Ready to track rainfall?",
+        "text": "Experience precise and reliable precipitation data directly from Netatmo's rain gauge. The app provides you with real-time information on the amount of rainfall, so you are always prepared for weather changes. Whether you are planning gardening, outdoor activities, or just want to keep an eye on the weather, the app will help you make better decisions.",
+        "button": "Get started"
+    },
+    "features": {
+        "stats": {
+            "header": "Statistics",
+            "text": "Get an overview of each rainy day, and click on a day to see when that day it rained!"
+        },
+        "graphs": {
+            "header": "Graphs",
+            "text": "Visualize the rain amounts in a single graph. Supports viewing the graph for all rainy days, but also for a single day."
+        },
+        "filter": {
+            "header": "Filter",
+            "text": "Use the filtering options to show data for only the current month, last month, or last week. You can also choose specific dates to display data for."
+        },
+        "events": {
+            "header": "Events",
+            "text": "Was there anything special that happened on a particular day in relation to the rainfall? For instance, are you curious about how much it has rained since you planted your flowers? Add an event for that, and it will appear on the graph."
+        }
+    }
+}

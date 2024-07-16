@@ -16,6 +16,7 @@ import {
   startOfMonth,
   endOfMonth,
 } from "@internationalized/date";
+import { useTranslation } from "react-i18next";
 
 export default function FilterModal({
   isOpen,
@@ -32,35 +33,33 @@ export default function FilterModal({
   handleFilter: (minDate: Date, maxDate: Date) => void;
   setFiltered: (isFiltered: boolean) => void
 }) {
-  let [value, setValue] = useState({
+  const [value, setValue] = useState({
     start: startOfMonth(today(getLocalTimeZone())),
     end: today(getLocalTimeZone()),
   });
-
-  let now = today(getLocalTimeZone());
-
-  let thisYear = {
+  const now = today(getLocalTimeZone());
+  const thisYear = {
     start: startOfMonth(now.subtract({ months: now.month - 1 })),
     end: now,
   };
-
-  let lastMonth = {
+  const lastMonth = {
     start: startOfMonth(now.subtract({ months: 1 })),
     end: endOfMonth(now.subtract({ months: 1 })),
   };
-
-  let [focusedValue, setFocusedValue] = useState(today(getLocalTimeZone()));
-
-  let thisMonth = { start: startOfMonth(now), end: now };
+  const [focusedValue, setFocusedValue] = useState(today(getLocalTimeZone()));
+  const thisMonth = { start: startOfMonth(now), end: now };
+  const { t } = useTranslation();
 
   return (
-    <Modal isOpen={isOpen} onOpenChange={onOpenChange}>
+    <Modal size={window.screen.width > window.screen.height ? "4xl" : "md"} isOpen={isOpen} onOpenChange={onOpenChange}>
       <ModalContent>
         {(onClose) => (
           <>
             <ModalHeader className="flex flex-col gap-1">Filtrer</ModalHeader>
             <ModalBody>
               <RangeCalendar
+                visibleMonths={window.screen.width > window.screen.height ? 3 : 1}
+                pageBehavior="single"
                 aria-label="Dato filter"
                 focusedValue={focusedValue}
                 maxValue={maxDate}
@@ -78,30 +77,34 @@ export default function FilterModal({
                     radius="full"
                     size="sm"
                     variant="bordered"
+                    aria-label="Dato filter"
                   >
                     <Button
+                      aria-label="This year"
                       onPress={() => {
                         setValue(thisYear);
                         setFocusedValue(thisYear.end);
                       }}
                     >
-                      I år
+                      {t('thisYear')}
                     </Button>
                     <Button
+                      aria-label="Last month"
                       onPress={() => {
                         setValue(lastMonth);
                         setFocusedValue(lastMonth.end);
                       }}
                     >
-                      Forrige måned
+                      {t('lastMonth')}
                     </Button>
                     <Button
+                      aria-label="This month"
                       onPress={() => {
                         setValue(thisMonth);
                         setFocusedValue(thisMonth.start);
                       }}
                     >
-                      Denne måneden
+                      {t('thisMonth')}
                     </Button>
                   </ButtonGroup>
                 }
@@ -110,18 +113,19 @@ export default function FilterModal({
                 onFocusChange={setFocusedValue}
               />
               <Button
+                aria-label="Reset filter"
                 onPress={() => {
                   handleFilter(new Date(1970, 0, 1), new Date(1970, 0, 1));
                   setFiltered(false);
                   onClose();
                 }}
               >
-                Reset filter
+                {t('resetFilter')}
               </Button>
             </ModalBody>
             <ModalFooter>
-              <Button color="danger" variant="light" onPress={onClose}>
-                Lukk
+              <Button color="danger" variant="light" onPress={onClose} aria-label="Close">
+                {t('close')}
               </Button>
               <Button
                 color="primary"
@@ -134,7 +138,7 @@ export default function FilterModal({
                   setFiltered(true);
                 }}
               >
-                Filtrer
+                {t('filter')}
               </Button>
             </ModalFooter>
           </>

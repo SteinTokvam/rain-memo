@@ -3,6 +3,7 @@ import { useEffect } from "react";
 import { v4 as uuidv4 } from "uuid";
 
 import { getNetatmoClientIdAndSecret, routes } from "@/global";
+import { useTranslation } from "react-i18next";
 
 export default function NetatmoOauth({
   supabase,
@@ -13,6 +14,7 @@ export default function NetatmoOauth({
   const redirect_uri = "https://rain-memo.vercel.app" + routes.netatmoRedirect;
   const scope = "read_station";
   const state = uuidv4();
+  const { t } = useTranslation();
 
   useEffect(() => {
     localStorage.setItem("state", state);
@@ -26,5 +28,5 @@ export default function NetatmoOauth({
     });
   }, []);
 
-  return <div>Redirecting to Netatmo for authentication...</div>;
+  return <div>{t('oAuthRedirecting')}</div>;
 }

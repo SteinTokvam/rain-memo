@@ -1,0 +1,8 @@
+{
+    "event": "Event",
+    "events": "Events",
+    "dateText": "Date for event",
+    "chosenDate": "Chosen date: {{date}}",
+    "addEvent": "Add event",
+    "noEvents": "No events"
+}

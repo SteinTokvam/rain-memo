@@ -3,6 +3,7 @@ import { useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 
 import { getNetatmoClientIdAndSecret, routes } from "@/global";
+import { useTranslation } from "react-i18next";
 
 export default function NetatmoRedirect({
   supabase,
@@ -12,6 +13,7 @@ export default function NetatmoRedirect({
   const state = localStorage.getItem("state") as string;
   const location = useLocation();
   const navigate = useNavigate();
+  const { t } = useTranslation();
 
   useEffect(() => {
     if (state !== location.search.split("&")[0]) {
@@ -73,5 +75,5 @@ export default function NetatmoRedirect({
     });
   }, []);
 
-  return <div>Redirecting...</div>;
+  return <div>{t('netatmoRedirecting')}</div>;
 }

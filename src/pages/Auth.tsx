@@ -1,10 +1,11 @@
-import { useState, useEffect, ReactNode } from "react";
+import { useState, useEffect, ReactNode, Suspense } from "react";
 import { Session, SupabaseClient } from "@supabase/supabase-js";
-import { Button, Input } from "@nextui-org/react";
+import { Button, Input, Spinner } from "@nextui-org/react";
 import { Link, useNavigate } from "react-router-dom";
 
 import { routes, styles } from "@/global";
 import { Logo } from "@/components/icons";
+import { useTranslation } from "react-i18next";
 
 export default function Auth({
   supabase,
@@ -18,8 +19,8 @@ export default function Auth({
   const [password, setPassword] = useState("");
   const [error, setError] = useState(false);
   const [isSignUp, setIsSignUp] = useState(false);
-  const [errorText, setErrorText] = useState("");
   const navigate = useNavigate();
+  const { t } = useTranslation(['auth', 'translation']);
 
   useEffect(() => {
     if (!supabase) {
@@ -60,8 +61,7 @@ export default function Auth({
         })
         .then(({ error }) => {
           if (error) {
-            console.log(error);
-            setErrorText(`error status: ${error.status} - error name: ${error.name} - error message: ${error.message} - error code: ${error.code} - error stack: ${error.stack}`);
+            console.error(error);
             setError(true);
           } else {
             setError(false);
@@ -74,71 +74,72 @@ export default function Auth({
 
   if (!session) {
     return (
-      <div className="w-2/3 sm:w-1/3 mx-auto space-y-2 grid grid-cols-1 mt-10">
-        <div className="flex justify-center">
-          <Logo />
-          <p className="font-bold text-inherit p-3">Rain memo</p>
+      <Suspense fallback={<Spinner />}>
+        <div className="w-2/3 sm:w-1/3 mx-auto space-y-2 grid grid-cols-1 mt-10">
+          <div className="flex justify-center">
+            <Logo />
+            <p className="font-bold text-inherit p-3">{t('appName', { ns: 'translation' })}</p>
+          </div>
+          {error && <p className="text-red-500">{t('wrongAuth')}</p>}
+          <Input
+            isClearable
+            isRequired
+            classNames={styles.textInputStyle}
+            label={t('email')}
+            type="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            onClear={() => setEmail("")}
+          />
+          <Input
+            isClearable
+            isRequired
+            classNames={styles.textInputStyle}
+            label={t('password')}
+            type="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            onClear={() => setPassword("")}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") {
+                e.preventDefault();
+                handleButton();
+              }
+            }}
+          />
+          <Button
+            color="primary"
+            onClick={() => {
+              handleButton();
+            }}
+            onKeyDown={(e) => {
+              console.log(e.key);
+              if (e.key === "Enter") {
+                e.preventDefault();
+                handleButton();
+              }
+            }}
+          >
+            {isSignUp ? t('signUp') : t('login')}
+          </Button>
+          <Link
+            className="text-blue-500"
+            to="#"
+            onClick={() => supabase.auth.resetPasswordForEmail(email)}
+          >
+            {t('forgotPassword')}
+          </Link>
+          <Link
+            className="text-blue-500"
+            to="#"
+            onClick={() => (isSignUp ? setIsSignUp(false) : setIsSignUp(true))}
+          >
+            {isSignUp
+              ? t('hasAccount')
+              : t('noAccount')}
+          </Link>
         </div>
-        {error && <p className="text-red-500">Wrong email or password</p>}
-        {error &&<p className="text-red-500">{errorText}</p>}
-        <Input
-          isClearable
-          isRequired
-          classNames={styles.textInputStyle}
-          label="Email"
-          type="email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          onClear={() => setEmail("")}
-        />
-        <Input
-          isClearable
-          isRequired
-          classNames={styles.textInputStyle}
-          label="Password"
-          type="password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          onClear={() => setPassword("")}
-          onKeyDown={(e) => {
-            if (e.key === "Enter") {
-              e.preventDefault();
-              handleButton();
-            }
-          }}
-        />
-        <Button
-          color="primary"
-          onClick={() => {
-            handleButton();
-          }}
-          onKeyDown={(e) => {
-            console.log(e.key);
-            if (e.key === "Enter") {
-              e.preventDefault();
-              handleButton();
-            }
-          }}
-        >
-          {isSignUp ? "Sign up" : "Log in"}
-        </Button>
-        <Link
-          className="text-blue-500"
-          to="#"
-          onClick={() => supabase.auth.resetPasswordForEmail(email)}
-        >
-          Forgot password?
-        </Link>
-        <Link
-          className="text-blue-500"
-          to="#"
-          onClick={() => (isSignUp ? setIsSignUp(false) : setIsSignUp(true))}
-        >
-          {isSignUp
-            ? "Already have an account? Log in."
-            : "No account? Sign up."}
-        </Link>
-      </div>
+      </Suspense>
     );
   } else {
     return <div>{children}</div>;

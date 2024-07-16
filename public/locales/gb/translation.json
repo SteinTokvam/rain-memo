@@ -1,0 +1,14 @@
+{
+    "appName": "Rain Memo",
+    "login": "Log in/Sign up",
+    "filter": "Filter",
+    "resetFilter": "Reset filter",
+    "thisMonth": "This month",
+    "lastMonth": "Last month",
+    "thisYear": "This year",
+    "oAuthRedirecting": "Redirecting to Netatmo for authentication...",
+    "netatmoRedirecting": "Redirecting...",
+    "rain": "Rainfall: {{rain}} mm",
+    "event": "Event: {{event}}",
+    "close": "Close"
+}
