@@ -237,13 +237,16 @@ export default function Device({ supabase }: { supabase: SupabaseClient }) {
                                 onOpenChange={onOpenChange}
                             />
                             {
-                                dataFormatted.length > 0 ? <Graph data={mergeEvents(userEvents, dataFormatted).sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())} /> :
+                                dataFormatted.length > 0 ? 
+                                <Graph data={mergeEvents(userEvents, dataFormatted).sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())} /> :
                                     <h1 className="text-3xl text-default-600 text-bold">{t('noData')}</h1>
                             }
                             <Divider />
                             <Button onClick={() => {
                                 navigate(routes.events.replace(":id", station.home_id));
-                            }}>{t('seeEventsButton')}</Button>
+                            }}>
+                                {t('seeEventsButton')}
+                            </Button>
                             {isFiltered && userEvents.length > 0 &&
                                 <div className="shadow-lg dark:bg-default/30 rounded-lg p-4">
                                     <h1 className="text-xl text-default-900">
