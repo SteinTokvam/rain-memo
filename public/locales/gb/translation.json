@@ -11,6 +11,9 @@
     "oAuthRedirecting": "Redirecting to Netatmo for authentication...",
     "netatmoRedirecting": "Redirecting...",
     "rain": "Rainfall: {{rain}} mm",
+    "rainfall": "Rainfall",
+    "timeOfDay": "Time of day",
+    "date": "Date",
     "event": "Event: {{event}}",
     "close": "Close"
 }

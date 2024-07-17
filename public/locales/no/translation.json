@@ -11,6 +11,9 @@
     "oAuthRedirecting": "Navigerer til Netatmo for autentisering...",
     "netatmoRedirecting": "Laster...",
     "rain": "Nedbør: {{rain}} mm",
+    "rainfall": "Nedbør",
+    "timeOfDay": "Tidspunkt",
+    "date": "Dato",
     "event": "Hendelse: {{event}}",
     "close": "Lukk"
 }

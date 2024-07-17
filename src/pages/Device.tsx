@@ -62,7 +62,7 @@ export default function Device({ supabase }: { supabase: SupabaseClient }) {
     const { isOpen, onOpen, onOpenChange } = useDisclosure();
 
     const navigate = useNavigate();
-    const { t } = useTranslation('device');
+    const { t } = useTranslation(['device', 'transaltion']);
 
     useEffect(() => {
         function fetchNetatmoData(date_begin: number = 0) {
@@ -360,7 +360,12 @@ export default function Device({ supabase }: { supabase: SupabaseClient }) {
                                 // @ts-ignore
                                 onSortChange={setSortDescriptor}
                             >
-                                <TableHeader columns={rainTableHeaders(false)}>
+                                <TableHeader columns={rainTableHeaders(
+                                    {
+                                        date: t('date', { ns: 'translation' }),
+                                        amount: t('rainfall', { ns: 'translation' })
+                                    }
+                                )}>
                                     {(column) => (
                                         <TableColumn key={column.key} allowsSorting>
                                             {column.label}
@@ -392,6 +397,6 @@ export default function Device({ supabase }: { supabase: SupabaseClient }) {
                     )}
                 </section>
             </DefaultLayout>
-        </Suspense>
+        </Suspense >
     );
 }

@@ -96,7 +96,12 @@ export default function Day({ supabase }: { supabase: SupabaseClient }) {
                                 <h2 className="text-lg text-default-600 text-semibold">{dataFormatted.reduce((a: any, b: any) => a + b.amount, 0).toFixed(2)}mm</h2>
                             </div>
                             <Table isStriped>
-                                <TableHeader columns={rainTableHeaders(true)}>
+                                <TableHeader columns={rainTableHeaders(
+                                    {
+                                        date: t('timeOfDay', { ns: 'translation' }),
+                                        amount: t('rainfall', { ns: 'translation' })
+                                    }
+                                )}>
                                     {(column) => (
                                         <TableColumn key={column.key}>{column.label}</TableColumn>
                                     )}

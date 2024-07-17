@@ -15,16 +15,18 @@ export const routes = {
   confirmEmail: "/confirm-email",
 };
 
-export const rainTableHeaders = (isDay: boolean) => [
-  {
-    key: "date",
-    label: isDay ? "Tidspunkt" : "Dato",
-  },
-  {
-    key: "amount",
-    label: "Mengde",
-  },
-];
+export const rainTableHeaders = (vocabulary: { [key: string]: string }) => {
+  return [
+    {
+      key: "date",
+      label: vocabulary["date"],
+    },
+    {
+      key: "amount",
+      label: vocabulary["amount"],
+    },
+  ]
+};
 
 export const styles = {
   valueText: "text-large font-bold leading-none text-default-400",
@@ -152,13 +154,13 @@ export async function getNetatmoUserData(supabase: SupabaseClient) {
 
       return data
         ? {
-            data: {
-              access_token: data.access_token,
-              refresh_token: data.refresh_token,
-              expires_at: Date.now() + data.expires_in * 1000,
-            },
-            error: null,
-          }
+          data: {
+            access_token: data.access_token,
+            refresh_token: data.refresh_token,
+            expires_at: Date.now() + data.expires_in * 1000,
+          },
+          error: null,
+        }
         : { data: null, error: "No netatmo data found." };
     });
   }
