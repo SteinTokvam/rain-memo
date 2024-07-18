@@ -67,10 +67,6 @@ export default function Device({ supabase }: { supabase: SupabaseClient }) {
     useEffect(() => {
         function fetchNetatmoData(date_begin: number = 0) {
             getNetatmoUserData(supabase).then((res) => {
-                if (!station) {
-                    navigate(routes.dashboard);
-                    return
-                }
                 if (res.error) {
                     console.warn(res.error);
                     navigate(routes.dashboard);
@@ -128,6 +124,11 @@ export default function Device({ supabase }: { supabase: SupabaseClient }) {
                         }
                     })
             });
+        }
+
+        if(!station) {
+            navigate(routes.dashboard);
+            return
         }
 
         document.title = t('deviceTitle', { name: station.station_name });

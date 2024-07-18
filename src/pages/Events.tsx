@@ -18,7 +18,11 @@ export default function Events({ supabase }: { supabase: SupabaseClient }) {
     const { t } = useTranslation('events');
 
     useEffect(() => {
-        document.title = "RainMemo - Hendelser";
+        document.title = `RainMemo - ${t('events')}`;
+        if(!station) {
+            navigate(routes.dashboard);
+            return
+        }
         supabase
             .from("user_events")
             .select("*")

@@ -80,7 +80,10 @@ export default function Day({ supabase }: { supabase: SupabaseClient }) {
                     }
                 })
         });
-        document.title = "RainMemo - Dag";
+        if(!station) {
+            navigate(routes.dashboard);
+        }
+        document.title = `RainMemo - ${date}`;
     }, []);
 
     return (
