@@ -144,7 +144,7 @@ export default function Device({ supabase }: { supabase: SupabaseClient }) {
                     setUserEvents(res.data);
                 })
         }
-    }, [hasAllData, allNetatmoData, station, isFiltered]);
+    }, []);
 
     function getNumberOfDaysSinceStart(start: Date, end: Date) {
         let Difference_In_Time =
