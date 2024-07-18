@@ -106,7 +106,7 @@ export const Navbar = ({ supabase }: { supabase: SupabaseClient | null }) => {
       </NavbarContent>
 
       <NavbarContent className="flex basis-1/5 sm:basis-full" justify="end">
-        <NavbarItem className="hidden sm:flex gap-2">
+        <NavbarItem className="hidden sm:flex gap-2" >
           {
             renderLanguageSelector()
           }

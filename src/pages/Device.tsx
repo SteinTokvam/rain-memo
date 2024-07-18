@@ -62,7 +62,7 @@ export default function Device({ supabase }: { supabase: SupabaseClient }) {
     const { isOpen, onOpen, onOpenChange } = useDisclosure();
 
     const navigate = useNavigate();
-    const { t } = useTranslation(['device', 'transaltion']);
+    const { t } = useTranslation(['device', 'translation']);
 
     useEffect(() => {
         function fetchNetatmoData(date_begin: number = 0) {

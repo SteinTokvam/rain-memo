@@ -19,6 +19,7 @@ export default function DefaultLayout({
       <footer className="w-full flex items-center justify-center py-3">
         <Link
           isExternal
+          aria-label="Github page"
           className="flex items-center gap-1 text-current"
           href="https://github.com/steintokvam"
           title="Github page"
