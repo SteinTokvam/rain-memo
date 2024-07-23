@@ -15,5 +15,6 @@
     "timeOfDay": "Time of day",
     "date": "Date",
     "event": "Event: {{event}}",
-    "close": "Close"
+    "close": "Close",
+    "weatherAttribution": "Weather data from MET Norway. Icons from NRK/YR"
 }

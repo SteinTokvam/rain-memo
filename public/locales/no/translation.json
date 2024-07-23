@@ -15,5 +15,6 @@
     "timeOfDay": "Tidspunkt",
     "date": "Dato",
     "event": "Hendelse: {{event}}",
-    "close": "Lukk"
+    "close": "Lukk",
+    "weatherAttribution": "Værdata fra MET Norge. Ikoner fra NRK/YR"
 }

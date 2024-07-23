@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 import SVG from 'react-inlinesvg';
 import { useDraggable } from "react-use-draggable-scroll";
 
@@ -9,7 +10,7 @@ export default function Weather({ longitude, latitude }: { longitude: string, la
 
     const ref = useRef<HTMLDivElement>() as React.MutableRefObject<HTMLInputElement>;
     const { events } = useDraggable(ref); // Now we pass the reference to the useDraggable hook:
-
+    const { t } = useTranslation('translation');
 
     useEffect(() => {
         console.log(`https://api.met.no/weatherapi/locationforecast/2.0/compact?lat=${latitude}&lon=${longitude}`)
@@ -69,6 +70,7 @@ export default function Weather({ longitude, latitude }: { longitude: string, la
                     })
                 }
             </div>
+            <p className="text-left text-default-600">{t('weatherAttribution')}</p>
         </div>
     )
 }
