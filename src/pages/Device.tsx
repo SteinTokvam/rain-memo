@@ -24,6 +24,7 @@ import RainFilter from "@/components/RainFilter";
 import Graph from "@/components/Graph";
 import FilterModal from "@/components/FilterModal";
 import { useTranslation } from "react-i18next";
+import Weather from "../components/Weather";
 
 export default function Device({ supabase }: { supabase: SupabaseClient }) {
     const { id } = useParams();
@@ -126,7 +127,7 @@ export default function Device({ supabase }: { supabase: SupabaseClient }) {
             });
         }
 
-        if(!station) {
+        if (!station) {
             navigate(routes.dashboard);
             return
         }
@@ -238,8 +239,8 @@ export default function Device({ supabase }: { supabase: SupabaseClient }) {
                                 onOpenChange={onOpenChange}
                             />
                             {
-                                dataFormatted.length > 0 ? 
-                                <Graph data={mergeEvents(userEvents, dataFormatted).sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())} /> :
+                                dataFormatted.length > 0 ?
+                                    <Graph data={mergeEvents(userEvents, dataFormatted).sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())} /> :
                                     <h1 className="text-3xl text-default-600 text-bold">{t('noData')}</h1>
                             }
                             <Divider />
@@ -355,6 +356,9 @@ export default function Device({ supabase }: { supabase: SupabaseClient }) {
                                 }
 
                             </div>
+
+                            <Weather longitude={station.place.location[0].toFixed(2)} latitude={station.place.location[1].toFixed(2)} />
+
                             <RainFilter handleClick={onOpen} />
                             <Table
                                 isStriped
