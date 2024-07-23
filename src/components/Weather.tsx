@@ -13,7 +13,6 @@ export default function Weather({ longitude, latitude }: { longitude: string, la
     const { t } = useTranslation('translation');
 
     useEffect(() => {
-        console.log(`https://api.met.no/weatherapi/locationforecast/2.0/compact?lat=${latitude}&lon=${longitude}`)
         fetch(`https://api.met.no/weatherapi/locationforecast/2.0/compact?lat=${latitude}&lon=${longitude}`)
             .then(res => res.json())
             .then(data => {
@@ -59,7 +58,7 @@ export default function Weather({ longitude, latitude }: { longitude: string, la
                                     width={58}
                                     height={"auto"}
                                 />
-                                <div>
+                                <div className="no-select">
                                     {new Date(data.time).toLocaleString("no", { timeZone: "Europe/Oslo" })
                                         .split(",").map((elem: string) => <h1>{elem}</h1>)}
                                     <p>{data.data.instant.details.air_temperature.toFixed(0)}{'\u00B0'}C</p>
