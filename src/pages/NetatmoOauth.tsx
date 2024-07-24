@@ -15,9 +15,9 @@ export default function NetatmoOauth({
   const scope = "read_station";
   const state = uuidv4();
   const { t } = useTranslation();
-
+  localStorage.setItem("state", state);
+  
   useEffect(() => {
-    localStorage.setItem("state", state);
     getNetatmoClientIdAndSecret(supabase).then((res) => {
       if (res.error) {
         console.error(res.error);
