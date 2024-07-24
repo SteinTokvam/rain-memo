@@ -16,7 +16,9 @@ export default function NetatmoRedirect({
   const { t } = useTranslation();
 
   useEffect(() => {
-    if (state !== location.search.split("&")[0]) {
+    if (state !== location.search.split("&")[0].slice(7)) {
+      console.log(state)
+      console.log(location.search.split("&")[0].slice(7))
       console.error("Invalid state");
       localStorage.removeItem("state");
       //return
