@@ -50,19 +50,21 @@ export default function Weather({ longitude, latitude }: { longitude: string, la
                     weatherData && weatherData.properties.timeseries.map((data: any) => {
                         if (!data.data.next_1_hours) return
                         return (
-                            <div className="no-select p-4 grid flex-none" key={data.time}>
-                                <SVG
-                                    src={icon.filter((icon: any) => icon.iconName === data.data.next_1_hours.summary.symbol_code)[0].icon}
-                                    title={data.data.next_1_hours.summary.symbol_code}
-                                    aria-label={data.data.next_1_hours.summary.symbol_code}
-                                    width={58}
-                                    height={"auto"}
-                                />
-                                <div className="no-select">
-                                    {new Date(data.time).toLocaleString("no", { timeZone: "Europe/Oslo" })
-                                        .split(",").map((elem: string) => <h1>{elem}</h1>)}
-                                    <p>{data.data.instant.details.air_temperature.toFixed(0)}{'\u00B0'}C</p>
-                                    {data.data.next_1_hours.details.precipitation_amount ? <p>{data.data.next_1_hours.details.precipitation_amount} mm</p> : "0 mm"}
+                            <div key={data.time}>
+                                <div className="no-select p-4 grid flex-none">
+                                    <SVG
+                                        src={icon.filter((icon: any) => icon.iconName === data.data.next_1_hours.summary.symbol_code)[0].icon}
+                                        title={data.data.next_1_hours.summary.symbol_code}
+                                        aria-label={data.data.next_1_hours.summary.symbol_code}
+                                        width={58}
+                                        height={"auto"}
+                                    />
+                                    <div className="no-select">
+                                        {new Date(data.time).toLocaleString("no", { timeZone: "Europe/Oslo" })
+                                            .split(",").map((elem: string) => <h1>{elem}</h1>)}
+                                        <p>{data.data.instant.details.air_temperature.toFixed(0)}{'\u00B0'}C</p>
+                                        {data.data.next_1_hours.details.precipitation_amount ? <p>{data.data.next_1_hours.details.precipitation_amount} mm</p> : "0 mm"}
+                                    </div>
                                 </div>
                             </div>
                         )

@@ -11,7 +11,7 @@ export default function NetatmoOauth({
   supabase: SupabaseClient;
 }) {
 
-  const redirect_uri = "https://rain-memo.vercel.app" + routes.netatmoRedirect;
+  const redirect_uri = "https://rainmemo.com" + routes.netatmoRedirect;
   const scope = "read_station";
   const state = uuidv4();
   const { t } = useTranslation();
