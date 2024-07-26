@@ -123,7 +123,7 @@ async function refreshNetatmoToken(
             refresh_token: string;
             expires_in: number;
           }) => {
-            console.log(data);
+            console.log("Refreshed token", data);
             updateNetatmoInfo(id, data, supabase).then((res) =>
               console.log(res),
             );
@@ -149,8 +149,12 @@ export async function getNetatmoUserData(supabase: SupabaseClient) {
       data[0].id,
       data[0].refresh_token,
       supabase,
-    ).then((data) => {
+    ).then((data: any) => {
       console.log("Refreshed token");
+
+      if(data.error) {
+        console.error("Failed to refresh token", data.error)
+      }
 
       return data
         ? {
