@@ -39,6 +39,20 @@ export default function Weather({ longitude, latitude }: { longitude: string, la
         })
     }
 
+    function getWindDirectionArrow(direction: number, speed: number) {
+        let ret = ""
+        if (direction >= 0 && direction < 67.5 || direction >= 270) {//north
+            ret = `⬇`
+        } else if (direction >= 67.5 && direction < 135) {//east
+            ret = `⬅`
+        } else if (direction >= 135 && direction < 202.5) {//south
+            ret = `⬆`
+        } else if (direction >= 202.5 && direction < 270) {//west
+            ret = `➡`
+        }
+        return `${ret} ${speed} m/s`
+    }
+
     return (
         <div className="w-full sm:max-w-7xl">
 
@@ -51,7 +65,7 @@ export default function Weather({ longitude, latitude }: { longitude: string, la
                         if (!data.data.next_1_hours) return
                         return (
                             <div key={data.time}>
-                                <div className="no-select p-4 grid flex-none">
+                                <div className="no-select p-4 grid flex-none w-28">
                                     <SVG
                                         src={icon.filter((icon: any) => icon.iconName === data.data.next_1_hours.summary.symbol_code)[0].icon}
                                         title={data.data.next_1_hours.summary.symbol_code}
@@ -64,6 +78,7 @@ export default function Weather({ longitude, latitude }: { longitude: string, la
                                             .split(",").map((elem: string) => <h1>{elem}</h1>)}
                                         <p>{data.data.instant.details.air_temperature.toFixed(0)}{'\u00B0'}C</p>
                                         {data.data.next_1_hours.details.precipitation_amount ? <p>{data.data.next_1_hours.details.precipitation_amount} mm</p> : "0 mm"}
+                                        <p>{getWindDirectionArrow(data.data.instant.details.wind_from_direction, data.data.instant.details.wind_speed)}</p>
                                     </div>
                                 </div>
                             </div>
