@@ -11,7 +11,6 @@ export default function NetatmoOauth({
   supabase: SupabaseClient;
 }) {
 
-  const redirect_uri = "https://rainmemo.com" + routes.netatmoRedirect;
   const scope = "read_station";
   const state = uuidv4();
   const { t } = useTranslation();
@@ -24,7 +23,11 @@ export default function NetatmoOauth({
 
         return;
       }
-      window.location.href = `https://api.netatmo.com/oauth2/authorize?client_id=${res.data ? res.data.client_id : ""}&redirect_uri=${redirect_uri}&scope=${scope}&state=${state}`;
+      if(res.data) {
+        window.location.href = `https://api.netatmo.com/oauth2/authorize?client_id=${res.data.client_id}&redirect_uri=${res.data.redirect_uri}&scope=${scope}&state=${state}`;
+      } else {
+        console.error("No Netatmo credentials found in database.");
+      }
     });
   }, []);
 
