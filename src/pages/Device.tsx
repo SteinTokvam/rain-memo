@@ -65,6 +65,8 @@ export default function Device({ supabase }: { supabase: SupabaseClient }) {
     const navigate = useNavigate();
     const { t } = useTranslation(['device', 'translation']);
 
+    const daysCloseEnough = 7
+
     useEffect(() => {
         function fetchNetatmoData(date_begin: number = 0) {
             getNetatmoUserData(supabase).then((res) => {
@@ -99,7 +101,6 @@ export default function Device({ supabase }: { supabase: SupabaseClient }) {
                                     amount: values[index][0]
                                 }
                             })
-
                             const dataWithKey = ret.map((d: any) => ({ ...d, key: uuidv4() }));
                             const lastDateUnix = dataWithKey[dataWithKey.length - 1].date;
                             const lastDate = new Date(lastDateUnix * 1000);
@@ -108,7 +109,9 @@ export default function Device({ supabase }: { supabase: SupabaseClient }) {
                             // Reset today's date time to 00:00:00 to only compare dates
                             today.setHours(0, 0, 0, 0);
                             lastDate.setHours(0, 0, 0, 0);
-                            if (lastDate.getTime() === today.getTime()) {
+                            if (lastDate.getTime() === today.getTime() || // today
+                                lastDate.getTime() - today.getTime() < 60 * 60 * 24 * daysCloseEnough || // within daysCloseEnough margin of error
+                                (new Date(lastFetchedDate).getFullYear() === new Date().getFullYear() && new Date().getMonth() > 9)) {//within this year if date is > october
                                 setHasAllData(true);
                             }
                             setLastFetchedDate(lastDateUnix);
@@ -136,6 +139,8 @@ export default function Device({ supabase }: { supabase: SupabaseClient }) {
 
         if (!hasAllData) {
             fetchNetatmoData(lastFetchedDate);
+        } else {
+            setHasAllData(true);
         }
         if (!isFiltered) {
             supabase
