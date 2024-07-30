@@ -1,6 +1,6 @@
 import { SupabaseClient } from "@supabase/supabase-js";
-
 import { NetatmoInfo } from "./types";
+import { StationData, test, getStationData } from "netatmo-client/src/index";
 
 export const routes = {
   home: "/",
@@ -152,7 +152,7 @@ export async function getNetatmoUserData(supabase: SupabaseClient) {
     ).then((data: any) => {
       console.log("Refreshed token");
 
-      if(data.error) {
+      if (data.error) {
         console.error("Failed to refresh token", data.error)
       }
 
@@ -177,4 +177,20 @@ export async function getNetatmoUserData(supabase: SupabaseClient) {
     },
     error: null,
   };
+}
+
+export function teste(supabase: SupabaseClient) {
+  getNetatmoClientIdAndSecret(supabase).then(({ data, error }) => {
+    if(error) {
+      console.log(error)
+    }
+    if(data) {
+      console.log(data)
+      //new NetatmoApiClient(data.client_id, data.client_secret).getStationData().then((data: StationData) => console.log(data))
+      const stationData = getStationData(false, data.client_id, data.client_secret, "")
+      console.log(test())
+      console.log({} as StationData)
+      //client.getStationData().then((station: StationData) => console.log(station))
+    }
+  })
 }

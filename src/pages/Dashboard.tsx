@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { SupabaseClient } from "@supabase/supabase-js";
 
-import { getNetatmoUserData, netatmo_base_url, routes } from "@/global";
+import { getNetatmoUserData, netatmo_base_url, routes, teste } from "@/global";
 import { setStations } from "@/actions/netatmo";
 import DefaultLayout from "@/layouts/default";
 import { Device, Module } from "@/types";
@@ -20,7 +20,8 @@ export default function Dashboard({ supabase }: { supabase: SupabaseClient }) {
   const { t } = useTranslation('dashboard');
 
   useEffect(() => {
-    getNetatmoUserData(supabase).then((res) => {
+    teste(supabase);
+    /*getNetatmoUserData(supabase).then((res) => {
       if (res.error) {
         console.warn(res.error);
         navigate(routes.netatmoOauth);
@@ -53,7 +54,7 @@ export default function Dashboard({ supabase }: { supabase: SupabaseClient }) {
           }
         })
         .catch(error => console.error(error));
-    });
+    });*/
     document.title = "RainMemo - Dashboard";
   }, [stations, navigate, dispatch, supabase]);
 
