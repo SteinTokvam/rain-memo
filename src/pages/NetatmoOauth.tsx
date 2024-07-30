@@ -2,7 +2,7 @@ import { SupabaseClient } from "@supabase/supabase-js";
 import { useEffect } from "react";
 import { v4 as uuidv4 } from "uuid";
 
-import { getNetatmoClientIdAndSecret, routes } from "@/global";
+import { getNetatmoClientIdAndSecret } from "@/global";
 import { useTranslation } from "react-i18next";
 
 export default function NetatmoOauth({
