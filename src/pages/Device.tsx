@@ -210,7 +210,7 @@ export default function Device({ supabase }: { supabase: SupabaseClient }) {
                                                 .filter((d: any) => d.amount > 0)
                                                 .map((d: any) => ({
                                                     key: d.key as string,
-                                                    date: new Date(d.date * 1000)
+                                                    date: new Date()
                                                         .toISOString()
                                                         .split("T")[0],
                                                     amount: d.amount,
